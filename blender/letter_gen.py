@@ -22,23 +22,26 @@ def add_text(
     secondary_material_name="blue",
 ):
     # Create a new collection for this object
-    collection = bpy.data.collections.new(text)
-    bpy.context.scene.collection.children.link(collection)
+    new_collection = bpy.data.collections.new(text)
+    bpy.context.scene.collection.children.link(new_collection)
 
     # Create the object
     bpy.ops.object.text_add(
-        enter_editmode=False, align="WORLD", location=(0, 0, 0), scale=(1, 1, 1)
+        enter_editmode=False, align="WORLD", location=(0, 0, 0), scale=(1, 1, 1),
     )
-    ob = bpy.data.objects["Text"]
-    ob.data.align_x = "CENTER"
-    ob.data.align_y = "BOTTOM_BASELINE"
-    ob.rotation_euler[0] = math.radians(90)
+    ob = bpy.context.active_object
 
+    # Handle collections and selection
     old_collections = ob.users_collection
-    collection.objects.link(ob)
+    new_collection.objects.link(ob)
     for old_collection in old_collections:
         old_collection.objects.unlink(ob)
+    ob.select_set(True)
 
+    # Handle properties
+    ob.rotation_euler[0] = math.radians(90)
+    ob.data.align_x = "CENTER"
+    ob.data.align_y = "BOTTOM_BASELINE"
     ob.data.body = text
     ob.data.font = bpy.data.fonts.load(font)
     ob.data.offset = offset
@@ -80,12 +83,21 @@ def export_collection_to_smd(cleanup=True):
     bpy.ops.export_scene.smd(collection="", export_scene=False)
 
     if cleanup:
+        collection = bpy.data.collections[0]
         bpy.data.collections.remove(collection)
 
 
+def generate_letter(string, font):
+    add_text(text=string, font=font)
+    export_collection_to_smd(cleanup=True)
+
+
 if __name__ == "__main__":
-    text = "Hello World"
+    characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+    font = "C:\\Windows\\Fonts\\Roboto-Bold.ttf"
+
     cleanup_scene()
-    set_source_export()
-    add_text(text=text)
-    export_collection_to_smd(name=text)
+    set_source_export(folder="output")
+
+    for char in characters:
+        generate_letter(char, font)
