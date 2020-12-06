@@ -4,6 +4,10 @@ from math import floor
 Color = tuple[int, int, int]
 
 
+def clamp(val: float) -> float:
+    return floor(min(max(0, val), 255))
+
+
 def linear_interpolate(color1: Color, color2: Color, p: float) -> Color:
     """Linearly interpolate between two colors
 
