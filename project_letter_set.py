@@ -1,15 +1,14 @@
-import argparse, os, subprocess
+import argparse, os, subprocess, time
 from source.qc_templater import generate_template, copy_template_file, compile_files
-
-
-def font_file_to_name(file: str):
-    pass
 
 
 def main(args):
     charset = args.charset
     output = args.output
     fontname = args.fontname
+
+    # Start timing
+    start_time = time.time()
 
     # Make output dir if not exists
     os.makedirs(output, exist_ok=True)
@@ -53,6 +52,10 @@ def main(args):
     # Compile QCs
     compile_files(output, [f"large_{c}" for c in charset])
     compile_files(output, [f"small_{c}" for c in charset])
+
+    # Done!
+    print("Compiled succesfully!")
+    print(f"Elapsed time: {round(time.time() - start_time, 2)} seconds")
 
 
 if __name__ == "__main__":
