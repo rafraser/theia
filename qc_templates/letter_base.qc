@@ -5,13 +5,13 @@ $surfaceprop	metal
 $cdmaterials	"models\alphabet\"
 
 $sequence idle	$smd$
-$collisionmodel	$smd$ { 
-    $concave
+$collisionmodel	$smd$ {
     $mass 150.0
 }
 
 $texturegroup skinfamilies
 {
+    { "letter_red" }
     { "letter_white" }
     { "letter_black" }
     { "letter_blurple" }
@@ -21,7 +21,6 @@ $texturegroup skinfamilies
     { "letter_gray" }
     { "letter_green" }
     { "letter_lightblue" }
-    { "letter_lightred" }
     { "letter_orange" }
     { "letter_pink" }
     { "letter_purple" }

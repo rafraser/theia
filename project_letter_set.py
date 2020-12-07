@@ -9,14 +9,27 @@ def font_file_to_name(file: str):
 def main(args):
     charset = args.charset
     output = args.output
-    fontname = "roboto"
+    fontname = args.fontname
 
     # Make output dir if not exists
     os.makedirs(output, exist_ok=True)
 
     # Generate SMDs
     process = subprocess.run(
-        ["blender", "--python", "./blender/letter_gen.py", "--", output]
+        [
+            "blender",
+            "--background",
+            "--python",
+            "./blender/letter_gen.py",
+            "--",
+            output,
+            "--font",
+            args.font,
+            "--quality",
+            str(args.quality),
+            "--extrude",
+            str(args.extrude),
+        ]
     )
 
     # Generate QCs
@@ -47,5 +60,8 @@ if __name__ == "__main__":
     parser.add_argument("output")
     parser.add_argument("--charset", default="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
     parser.add_argument("--font", default="C:\\Windows\\Fonts\\Roboto-Bold.ttf")
+    parser.add_argument("--fontname", default="roboto")
+    parser.add_argument("--quality", default=4)
+    parser.add_argument("--extrude", default=0.05)
     args = parser.parse_args()
     main(args)

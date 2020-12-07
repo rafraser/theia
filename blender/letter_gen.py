@@ -19,6 +19,7 @@ def add_text(
     extrude=0.1,
     primary_material_name="letter_primary",
     secondary_material_name="letter_red",
+    quality=4,
 ):
     # Create a new collection for this object
     new_collection = bpy.data.collections.new(text)
@@ -51,16 +52,16 @@ def add_text(
     ob.data.extrude = extrude
 
     # Helper stuff
-    convert_text_to_mesh(ob)
+    convert_text_to_mesh(ob, quality)
     apply_text_materials(ob, primary_material_name, secondary_material_name)
 
 
-def convert_text_to_mesh(ob):
+def convert_text_to_mesh(ob, quality):
     # Setup remesh modifier first
     bpy.ops.object.modifier_add(type="REMESH")
     ob.modifiers["Remesh"].mode = "SHARP"
     ob.modifiers["Remesh"].use_remove_disconnected = False
-    ob.modifiers["Remesh"].octree_depth = 4
+    ob.modifiers["Remesh"].octree_depth = quality
 
     # Convert to mesh
     bpy.ops.object.convert(target="MESH")
@@ -94,8 +95,8 @@ def export_collection_to_smd(cleanup=True):
         bpy.data.collections.remove(collection)
 
 
-def generate_letter(string, font):
-    add_text(text=string, font=font)
+def generate_letter(string, args):
+    add_text(text=string, font=args.font, quality=args.quality, extrude=args.extrude)
     export_collection_to_smd(cleanup=True)
 
 
@@ -104,10 +105,12 @@ if __name__ == "__main__":
     parser.add_argument("output")
     parser.add_argument("--characters", default="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
     parser.add_argument("--font", default="C:\\Windows\\Fonts\\Roboto-Bold.ttf")
+    parser.add_argument("--quality", default=4, type=int)
+    parser.add_argument("--extrude", default=0.05, type=float)
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1 :])
 
     cleanup_scene()
     set_source_export(folder=args.output)
 
     for char in args.characters:
-        generate_letter(char, args.font)
+        generate_letter(char, args)
