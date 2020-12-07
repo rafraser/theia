@@ -1,0 +1,1 @@
+"A:\SteamLibrary\steamapps\common\GarrysMod\bin\studiomdl.exe" -game "A:\SteamLibrary\steamapps\common\GarrysMod\garrysmod" -nop4 $1
