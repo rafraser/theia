@@ -1,5 +1,4 @@
-import bpy
-import math, os, mathutils
+import argparse, bpy, math, mathutils, os, sys
 
 
 def cleanup_scene():
@@ -18,8 +17,8 @@ def add_text(
     size=1,
     offset=0,
     extrude=0.1,
-    primary_material_name="white",
-    secondary_material_name="blue",
+    primary_material_name="letter_primary",
+    secondary_material_name="letter_red",
 ):
     # Create a new collection for this object
     new_collection = bpy.data.collections.new(text)
@@ -93,11 +92,14 @@ def generate_letter(string, font):
 
 
 if __name__ == "__main__":
-    characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-    font = "C:\\Windows\\Fonts\\Roboto-Bold.ttf"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("output")
+    parser.add_argument("--characters", default="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+    parser.add_argument("--font", default="C:\\Windows\\Fonts\\Roboto-Bold.ttf")
+    args = parser.parse_args(sys.argv[sys.argv.index("--") + 1 :])
 
     cleanup_scene()
-    set_source_export(folder="output")
+    set_source_export(folder=args.output)
 
-    for char in characters:
-        generate_letter(char, font)
+    for char in args.characters:
+        generate_letter(char, args.font)
