@@ -15,11 +15,9 @@ def main(args):
     os.makedirs(output, exist_ok=True)
 
     # Generate SMDs
-    # process = subprocess.run(
-    #     ["blender", "--python", "./blender/letter_gen.py", "--", output]
-    # )
-
-    # return None
+    process = subprocess.run(
+        ["blender", "--python", "./blender/letter_gen.py", "--", output]
+    )
 
     # Generate QCs
     for char in charset:

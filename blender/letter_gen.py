@@ -14,7 +14,7 @@ def set_source_export(folder="output"):
 def add_text(
     font="C:\\Windows\\Fonts\\Roboto-Bold.ttf",
     text="Hello World!",
-    size=1,
+    size=100,
     offset=0,
     extrude=0.1,
     primary_material_name="letter_primary",
@@ -26,9 +26,13 @@ def add_text(
 
     # Create the object
     bpy.ops.object.text_add(
-        enter_editmode=False, align="WORLD", location=(0, 0, 0), scale=(1, 1, 1),
+        enter_editmode=False,
+        align="WORLD",
+        location=(0, 0, 0),
+        scale=(size, size, size),
     )
     ob = bpy.context.active_object
+    ob.scale = (size, size, size)
 
     # Handle collections and selection
     old_collections = ob.users_collection
@@ -56,7 +60,7 @@ def convert_text_to_mesh(ob):
     bpy.ops.object.modifier_add(type="REMESH")
     ob.modifiers["Remesh"].mode = "SHARP"
     ob.modifiers["Remesh"].use_remove_disconnected = False
-    ob.modifiers["Remesh"].octree_depth = 7
+    ob.modifiers["Remesh"].octree_depth = 4
 
     # Convert to mesh
     bpy.ops.object.convert(target="MESH")
@@ -64,12 +68,16 @@ def convert_text_to_mesh(ob):
 
 def apply_text_materials(ob, primary_material_name, secondary_material_name):
     # Setup the materials
-    # We only care about the names in Blender
+    # The names are really only used for the textures later on
+    # Make double sure that the names are correct
     primary_mat = bpy.data.materials.new(name=primary_material_name)
     ob.data.materials.append(primary_mat)
+    ob.active_material_index = 0
+    ob.active_material.name = primary_material_name
     secondary_mat = bpy.data.materials.new(name=secondary_material_name)
     ob.data.materials.append(secondary_mat)
     ob.active_material_index = 1
+    ob.active_material.name = secondary_material_name
     ob.active_material.diffuse_color = (1, 0, 0, 1)
 
     # Apply the secondary material to only front-facing faces
