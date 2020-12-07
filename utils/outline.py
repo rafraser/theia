@@ -1,8 +1,6 @@
 from PIL import Image, ImageFilter, ImageOps, ImageChops
-from gif import combine_frames
-
-from channels import invert_with_alpha, multiply_no_alpha
-from color import clamp, Color
+from utils.channels import invert_with_alpha, multiply_no_alpha
+from utils.color import clamp, Color
 
 
 def apply_outline(
@@ -87,8 +85,8 @@ def drop_shadow(
         "RGBA", [sum(x) for x in zip(im.size, offset)], (255, 255, 255, 0)
     )
     canvas.paste(result, offset, result)
-    canvas.paste(im, (0, 0), im)
-    canvas.crop((0, 0, im.size[0], im.size[1]))
+    canvas = canvas.crop((0, 0, im.size[0], im.size[1]))
+    canvas = Image.alpha_composite(canvas, im)
     return canvas
 
 
