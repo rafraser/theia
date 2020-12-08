@@ -5,7 +5,8 @@ $surfaceprop	metal
 $cdmaterials	"models\alphabet\"
 
 $sequence idle	$smd$
-$collisionmodel	$smd$ {
+$collisionmodel	$collision_smd$ {
+    $concave
     $mass 150.0
 }
 

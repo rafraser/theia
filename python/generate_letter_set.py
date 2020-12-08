@@ -36,18 +36,20 @@ def main(args):
         variables = [
             ("basePath", f"alphabet/{fontname}/large_{char}.mdl"),
             ("smd", f"{char}.smd"),
+            ("collision_smd", f"{char}_collision.smd"),
         ]
         generate_template(output, f"large_{char}", "letter_base", variables)
 
         variables = [
             ("basePath", f"alphabet/{fontname}/small_{char}.mdl"),
             ("smd", f"{char}.smd"),
+            ("collision_smd", f"{char}_collision.smd"),
         ]
         generate_template(output, f"small_{char}", "letter_base_small", variables)
 
     # Copy templates
     copy_template_file(output, "letter_base")
-    copy_template_file(output, "letter_base_small")
+    copy_template_file(output, "letter_base")
 
     # Compile QCs
     compile_files(output, [f"large_{c}" for c in charset])
