@@ -27,4 +27,4 @@ def copy_template_file(
 def compile_files(directory: str, files: list[str]):
     for file in files:
         path = os.path.join(directory, file)
-        subprocess.call(["sh", "./source/compileqc.sh", path])
+        subprocess.call(["sh", "./scripts/compileqc.sh", path])

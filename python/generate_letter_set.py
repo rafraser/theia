@@ -1,4 +1,6 @@
 import argparse, os, subprocess, time
+
+from blender.launch_script import launch_script
 from source.qc_templater import generate_template, copy_template_file, compile_files
 
 
@@ -13,14 +15,10 @@ def main(args):
     # Make output dir if not exists
     os.makedirs(output, exist_ok=True)
 
-    # Generate SMDs
-    process = subprocess.run(
+    # Generate SMDs in Blender
+    launch_script(
+        "./python/blender/letter_gen.py",
         [
-            "blender",
-            "--background",
-            "--python",
-            "./blender/letter_gen.py",
-            "--",
             output,
             "--font",
             args.font,
@@ -28,7 +26,9 @@ def main(args):
             str(args.quality),
             "--extrude",
             str(args.extrude),
-        ]
+            "--characters",
+            args.charset,
+        ],
     )
 
     # Generate QCs
