@@ -49,7 +49,7 @@ def main(args):
 
     # Copy templates
     copy_template_file(output, "letter_base")
-    copy_template_file(output, "letter_base")
+    copy_template_file(output, "letter_base_small")
 
     # Compile QCs
     compile_files(output, [f"large_{c}" for c in charset])
