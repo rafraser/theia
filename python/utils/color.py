@@ -1,10 +1,34 @@
 from typing import Callable
 from math import floor
+from PIL import Image, ImageColor, ImageDraw
 
 Color = tuple[int, int, int]
 
 
-def clamp(val: float) -> float:
+def parse_palette(path: str) -> list[Color]:
+    """Parse a palette file into a list of colors
+
+    For info on what color strings can be handled:
+    https://pillow.readthedocs.io/en/stable/reference/ImageColor.html
+
+    Returns:
+        list[Color]: List of RGB colors
+    """
+    with open(path) as f:
+        return [ImageColor.getrgb(line) for line in f.readlines()]
+
+
+def clamp(val: float) -> int:
+    """Clamp a number to that expected by a reasonable RGB component
+    This ensures that we don't have negative values, or values exceeding one byte
+    Additionally, all number inputs are rounded
+
+    Args:
+        val (float): Raw float value to clamp
+
+    Returns:
+        int: Clamped R/G/B value
+    """
     return floor(min(max(0, val), 255))
 
 
@@ -53,14 +77,62 @@ def gradient(stops: dict[float, Color], t: float) -> Color:
     Returns:
         Color: Interpolated color value
     """
-    for i in range(len(stops)):
-        if t <= gradient[i][0]:
-            # Interpolate between stops i - 1 and stop i
-            d = (t - gradient[i - 1][0]) / (gradient[i][0] - stops[i - 1][0])
-            c1 = gradient[i - 1][1]
-            c2 = gradient[i][1]
-
+    laststop = None
+    for stop in stops:
+        if laststop is not None and t <= stop:
+            d = (t - laststop) / (stop - laststop)
+            print(d)
+            c1 = stops[laststop]
+            c2 = stops[stop]
             return linear_interpolate(c1, c2, d)
+        laststop = stop
 
     # Return last color if it doesn't fit into a stop
-    return stops[-1][1]
+    return list(stops.values())[-1]
+
+
+def linspace_gradient(clrs: list[Color]) -> dict[float, Color]:
+    """Given a list of colors, generate a linearly spaced gradient stops
+    First element will be at point 0, last element at point 1, etc.
+
+    Args:
+        clrs (list[Color]): List of colors
+
+    Returns:
+        dict[float, Color]: Linearly spaced gradient stops, using the specified colors
+    """
+    return {i / (len(clrs) - 1): c for i, c in enumerate(clrs)}
+
+
+def parse_gradient_string(string: str) -> dict[float, Color]:
+    """Parse a comma-seperated list of colors and generate a basic gradient
+    Supports any color string supported by PIL.ImageColor
+
+    Args:
+        string (str): Gradient string
+
+    Returns:
+        dict[float, Color]: Linearly spaced gradient stops
+    """
+    return linspace_gradient([ImageColor.getrgb(c.strip()) for c in string.split(",")])
+
+
+def gradient_image(stops: dict[float, Color], size: tuple[int, int]) -> Image:
+    """Generate an image from gradient stops
+    This image will always run Left to Right
+    For different directions, use Image.rotate on the result
+
+    Args:
+        stops (dict[float, Color]): Gradient stops
+        size (tuple[int, int]): Image dimensions
+    Returns:
+        Image: Gradient image (RGBA)
+    """
+    canvas = Image.new("RGBA", size)
+    draw = ImageDraw.Draw(canvas)
+
+    for i in range(size[0]):
+        t = i / (size[0] - 1)
+        color = gradient(stops, t)
+        draw.line((i, 0, i, size[1]), fill=color)
+    return canvas
