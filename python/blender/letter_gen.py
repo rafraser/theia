@@ -6,7 +6,6 @@ import argparse, bpy, math, mathutils, os, sys
 def remove_all_in_collection(col):
     for ob in col.objects:
         bpy.data.objects.remove(ob, do_unlink=True)
-
     bpy.data.collections.remove(col)
 
 
@@ -54,6 +53,7 @@ def add_text(
     primary_material_name="letter_primary",
     secondary_material_name="letter_red",
     quality=4,
+    decimate=0,
 ):
     """[summary]
 
@@ -73,10 +73,7 @@ def add_text(
 
     # Create the object
     bpy.ops.object.text_add(
-        enter_editmode=False,
-        align="WORLD",
-        location=(0, 0, 0),
-        scale=(size, size, size),
+        enter_editmode=False, align="WORLD", location=(0, 0, 0),
     )
     ob = bpy.context.active_object
     ob.scale = (size, size, size)
@@ -98,26 +95,42 @@ def add_text(
     ob.data.extrude = extrude
 
     # Helper stuff
-    convert_text_to_mesh(ob, quality)
+    convert_text_to_mesh(ob, quality, decimate=decimate)
     apply_text_materials(ob, primary_material_name, secondary_material_name)
     return ob
 
 
-def convert_text_to_mesh(ob, quality):
+def convert_text_to_mesh(ob, quality, decimate=0):
     """Convert a text curve to a mesh object
 
     Args:
         ob: Text curve to convert to mesh
         quality: Octree depth for the remesh modifier
     """
+    # Convert to mesh
+    bpy.ops.object.convert(target="MESH")
+    bpy.ops.object.shade_smooth()
+
     # Setup remesh modifier first
     bpy.ops.object.modifier_add(type="REMESH")
     ob.modifiers["Remesh"].mode = "SHARP"
     ob.modifiers["Remesh"].use_remove_disconnected = False
     ob.modifiers["Remesh"].octree_depth = quality
+    if decimate > 0:
+        ob.modifiers["Remesh"].use_smooth_shade = True
 
-    # Convert to mesh
-    bpy.ops.object.convert(target="MESH")
+    bpy.ops.object.modifier_apply(apply_as="DATA", modifier="Remesh")
+
+    # We get nicer results if we crank the remesh quality up and then add a decimate modifier
+    if decimate > 0:
+        bpy.ops.object.modifier_add(type="DECIMATE")
+        ob.modifiers["Decimate"].ratio = decimate
+        ob.modifiers["Decimate"].use_collapse_triangulate = True
+        bpy.ops.object.modifier_apply(apply_as="DATA", modifier="Decimate")
+
+        # Edge split for nicer shading
+        bpy.ops.object.modifier_add(type="EDGE_SPLIT")
+        bpy.ops.object.modifier_apply(apply_as="DATA", modifier="Edge_Split")
 
 
 def apply_text_materials(ob, primary_material_name, secondary_material_name):
@@ -145,7 +158,7 @@ def apply_text_materials(ob, primary_material_name, secondary_material_name):
 
     # Apply the secondary material to only front-facing faces
     for face in ob.data.polygons:
-        if face.normal == mathutils.Vector((0, 0, 1)):
+        if face.normal.angle(mathutils.Vector((0, 0, 1))) < 0.1:
             face.material_index = 1
 
 
@@ -187,10 +200,6 @@ def generate_collision_model(ob, name, depth=10):
     bpy.ops.object.shade_smooth()
     bpy.ops.object.join()
 
-    # Export as cmd and cleanup
-    bpy.ops.export_scene.smd(collection=col.name, export_scene=False)
-    remove_all_in_collection(col)
-
 
 def generate_letter(string, args):
     """Generate a single 3D text object
@@ -200,13 +209,15 @@ def generate_letter(string, args):
         args: other arguments - see argparser below
     """
     ob = add_text(
-        text=string, font=args.font, quality=args.quality, extrude=args.extrude
+        text=string,
+        font=args.font,
+        quality=args.quality,
+        extrude=args.extrude,
+        decimate=args.decimate,
     )
 
-    if True:
-        generate_collision_model(ob, string)
-
-    export_collection_to_smd(cleanup=True)
+    generate_collision_model(ob, string)
+    bpy.ops.export_scene.smd(collection="", export_scene=True)
 
 
 if __name__ == "__main__":
@@ -218,6 +229,7 @@ if __name__ == "__main__":
     parser.add_argument("--font", default="C:\\Windows\\Fonts\\Roboto-Bold.ttf")
     parser.add_argument("--quality", default=4, type=int)
     parser.add_argument("--extrude", default=0.05, type=float)
+    parser.add_argument("--decimate", default=0, type=float)
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1 :])
 
     cleanup_scene()

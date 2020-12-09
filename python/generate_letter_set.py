@@ -26,6 +26,8 @@ def main(args):
             str(args.quality),
             "--extrude",
             str(args.extrude),
+            "--decimate",
+            str(args.decimate),
             "--characters",
             args.charset,
         ],
@@ -68,5 +70,6 @@ if __name__ == "__main__":
     parser.add_argument("--fontname", default="roboto")
     parser.add_argument("--quality", default=4)
     parser.add_argument("--extrude", default=0.05)
+    parser.add_argument("--decimate", default=0.08)
     args = parser.parse_args()
     main(args)
