@@ -6,6 +6,7 @@ import argparse, bpy, math, mathutils, os, sys
 def remove_all_in_collection(col):
     for ob in col.objects:
         bpy.data.objects.remove(ob, do_unlink=True)
+
     bpy.data.collections.remove(col)
 
 
@@ -107,10 +108,6 @@ def convert_text_to_mesh(ob, quality, decimate=0):
         ob: Text curve to convert to mesh
         quality: Octree depth for the remesh modifier
     """
-    # Convert to mesh
-    bpy.ops.object.convert(target="MESH")
-    bpy.ops.object.shade_smooth()
-
     # Setup remesh modifier first
     bpy.ops.object.modifier_add(type="REMESH")
     ob.modifiers["Remesh"].mode = "SHARP"
@@ -119,18 +116,18 @@ def convert_text_to_mesh(ob, quality, decimate=0):
     if decimate > 0:
         ob.modifiers["Remesh"].use_smooth_shade = True
 
-    bpy.ops.object.modifier_apply(apply_as="DATA", modifier="Remesh")
-
     # We get nicer results if we crank the remesh quality up and then add a decimate modifier
     if decimate > 0:
         bpy.ops.object.modifier_add(type="DECIMATE")
         ob.modifiers["Decimate"].ratio = decimate
         ob.modifiers["Decimate"].use_collapse_triangulate = True
-        bpy.ops.object.modifier_apply(apply_as="DATA", modifier="Decimate")
 
         # Edge split for nicer shading
         bpy.ops.object.modifier_add(type="EDGE_SPLIT")
-        bpy.ops.object.modifier_apply(apply_as="DATA", modifier="Edge_Split")
+
+    # Convert to mesh
+    bpy.ops.object.convert(target="MESH")
+    bpy.ops.object.shade_smooth()
 
 
 def apply_text_materials(ob, primary_material_name, secondary_material_name):
@@ -200,6 +197,10 @@ def generate_collision_model(ob, name, depth=10):
     bpy.ops.object.shade_smooth()
     bpy.ops.object.join()
 
+    # Export as cmd and cleanup
+    bpy.ops.export_scene.smd(collection=col.name, export_scene=False)
+    remove_all_in_collection(col)
+
 
 def generate_letter(string, args):
     """Generate a single 3D text object
@@ -217,7 +218,7 @@ def generate_letter(string, args):
     )
 
     generate_collision_model(ob, string)
-    bpy.ops.export_scene.smd(collection="", export_scene=True)
+    export_collection_to_smd(cleanup=True)
 
 
 if __name__ == "__main__":
