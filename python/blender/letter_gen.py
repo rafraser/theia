@@ -116,17 +116,20 @@ def convert_text_to_mesh(ob, quality, decimate=0):
     if decimate > 0:
         ob.modifiers["Remesh"].use_smooth_shade = True
 
+    bpy.ops.object.modifier_apply(modifier="REMESH")
+    bpy.ops.object.convert(target="MESH")
+
     # We get nicer results if we crank the remesh quality up and then add a decimate modifier
     if decimate > 0:
         bpy.ops.object.modifier_add(type="DECIMATE")
         ob.modifiers["Decimate"].ratio = decimate
         ob.modifiers["Decimate"].use_collapse_triangulate = True
+        bpy.ops.object.modifier_apply(modifier="DECIMATE")
 
         # Edge split for nicer shading
         bpy.ops.object.modifier_add(type="EDGE_SPLIT")
+        bpy.ops.object.modifier_apply(modifier="EDGE_SPLIT")
 
-    # Convert to mesh
-    bpy.ops.object.convert(target="MESH")
     bpy.ops.object.shade_smooth()
 
 
