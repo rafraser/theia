@@ -1,5 +1,6 @@
 from typing import Callable
 from math import floor
+from random import random
 from PIL import Image, ImageColor, ImageDraw
 
 Color = tuple[int, int, int]
@@ -71,7 +72,7 @@ def gradient(stops: Gradient, t: float) -> Color:
     Given some value of t, will return the interpolated value for that gradient
 
     Args:
-        stops (Gradient): List of gradient stops: (float, color)
+        stops (Gradient): Dict of gradient stops {float: Color}
         t (float): 0..1 position of the gradient
 
     Returns:
@@ -88,6 +89,19 @@ def gradient(stops: Gradient, t: float) -> Color:
 
     # Return last color if it doesn't fit into a stop
     return list(stops.values())[-1]
+
+
+def random_from_gradient(stops: Gradient) -> Color:
+    """Gradient utility function
+    Will return a random colour at some point on the given gradient
+
+    Args:
+        stops (Gradient): Dict of gradient stops {float: Color}
+
+    Returns:
+        Color: Randomly sampled color value
+    """
+    return gradient(stops, random())
 
 
 def linspace_gradient(clrs: list[Color]) -> Gradient:
