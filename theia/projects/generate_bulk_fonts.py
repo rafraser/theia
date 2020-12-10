@@ -1,5 +1,7 @@
 from generate_letter_set import main as generate_letter_set
 
+# This file is very scuffed I'm sorry
+
 CHARSET_FULL = "ABCDEFGHIJKLMNOPQRSTVUWXYZabcdefghijklmnopqrstuvwyxz1234567890!@#$%&"
 FONT_ROOT = "C:\\Windows\\Fonts\\"
 
