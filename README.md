@@ -4,10 +4,10 @@ Automating aspects of image generation
 
 ## Python
 
-The scripts in this repository are designed to work with Python 3.90, utilising the new type hinting features in this version of Python. I strongly recommend using Python 3.90 or newer when running these scripts.
+The scripts in this repository are designed to work with Python 3.90, utilising the new type hinting features in this version of Python. I strongly recommend using Python 3.90 or newer when running these scripts. I've created a .python-version file so, if all goes well, pyenv should help out with this.
 
-All scripts are designed to be executed from the root directory, eg:
-`python ./python/generate_letter_set.py output`
+All scripts are designed to be executed from the root directory. I recommend executing as a module, eg:
+`python -m theia.projects.generate_letter_set.py`
 
 ### Formatting
 
@@ -26,9 +26,9 @@ python -m unittest
 
 Some of the scripts in this repository interface with Blender to generate 3D models. In order for these scripts to work easily, you will need to ensure that Blender is added to PATH.
 
-Some scripts may use the following plugins:
+These scripts are built and tested on Blender 2.91. Some of these scripts may use the following plugins:
 
 - [Blender Source Tools](https://github.com/Artfunkel/BlenderSourceTools)
-- [VHAC-D](https://github.com/andyp123/blender_vhacd)
+- [VHAC-D](https://github.com/tpdickso/blender_vhacd)
 
-These addons have been tested to work with Blender 2.83. At the time of writing, these addons do not work with Blender 2.9+, however there are workarounds for this if you're inclined to deal with that.
+At the time of writing, these addons are not well supported for Blender 2.9+ so you will need to set these up manually.
