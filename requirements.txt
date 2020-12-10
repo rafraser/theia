@@ -1,1 +1,2 @@
 Pillow==8.0.1
+requests==2.25.0

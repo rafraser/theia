@@ -6,19 +6,6 @@ Color = tuple[int, int, int]
 Gradient = dict[float, Color]
 
 
-def parse_palette(path: str) -> list[Color]:
-    """Parse a palette file into a list of colors
-
-    For info on what color strings can be handled:
-    https://pillow.readthedocs.io/en/stable/reference/ImageColor.html
-
-    Returns:
-        list[Color]: List of RGB colors
-    """
-    with open(path) as f:
-        return [ImageColor.getrgb(line) for line in f.readlines()]
-
-
 def clamp(val: float) -> int:
     """Clamp a number to that expected by a reasonable RGB component
     This ensures that we don't have negative values, or values exceeding one byte
@@ -31,6 +18,18 @@ def clamp(val: float) -> int:
         int: Clamped R/G/B value
     """
     return floor(min(max(0, val), 255))
+
+
+def color_to_hex(color: Color) -> str:
+    """Convert a color tuple into a hexadecimal code
+
+    Args:
+        color (Color): Color to convert
+
+    Returns:
+        str: Color string in hex format
+    """
+    return "#{0:02x}{1:02x}{2:02x}".format(*[clamp(x) for x in color])
 
 
 def linear_interpolate(color1: Color, color2: Color, p: float) -> Color:
