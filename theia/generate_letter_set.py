@@ -1,7 +1,11 @@
 import argparse, os, subprocess, time
 
 from blender.launch_script import launch_script
-from source.qc_templater import generate_template, copy_template_file, compile_files
+from sourcetools.qc_templater import (
+    generate_template,
+    copy_template_file,
+    compile_files,
+)
 
 
 def main(args):
