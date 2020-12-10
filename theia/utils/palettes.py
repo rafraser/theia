@@ -1,28 +1,61 @@
-from utils.color import Color, color_to_hex
+from theia.utils.color import Color, color_to_hex
 from PIL import ImageColor
 import os, requests
 
 # Extension to use for palette files
 # Palettes are saved as unencoded plain text, one color per line
-PALETTE_EXTENSION = "txt"
+PALETTE_EXT = "txt"
 
 
-def parse_palette(name: str) -> list[Color]:
+def load_palette(name: str) -> list[Color]:
     """Parse a palette file into a list of colors
     This loads from the palettes/ directory
 
     For info on what color strings can be handled:
     https://pillow.readthedocs.io/en/stable/reference/ImageColor.html
 
+    Args:
+        name (str): Palette name. Should be a file in the palettes/ directory.
+
     Returns:
         list[Color]: List of RGB colors
     """
     with open(f"palettes/{name}.{PALETTE_EXT}") as f:
-        return [
-            ImageColor.getrgb(line)
-            for line in f.readlines()
-            if not line.startswith("#")
-        ]
+        return parse_palette(
+            [line for line in f.readlines() if not line.startswith(";")]
+        )
+
+
+def load_or_download_palette(name: str, save: bool = True) -> list[Color]:
+    """Attempts to load a palette from the given palette file
+    If the palette does not exist, this will attempt to download the palette from lospec
+
+    Args:
+        name (str): Palette name.
+        save (bool, optional): If the palette is downloaded, should a copy be saved? Defaults to True.
+
+    Returns:
+        list[Color]: List of RGB colors
+    """
+    try:
+        return load_palette(name)
+    except FileNotFoundError:
+        if save:
+            return download_and_save_lospec_palette(name)
+        else:
+            return download_lospec_palette(name)
+
+
+def parse_palette(strings: list[str]) -> list[Color]:
+    """Parse a list of strings into a list of colors
+
+    Args:
+        strings (list[str]): List of possible color strings
+
+    Returns:
+        list[Color]: List of parsed RGB colors
+    """
+    return [ImageColor.getrgb(s) for s in strings]
 
 
 def save_palette(name: str, colors: list[Color]):
@@ -55,7 +88,7 @@ def download_lospec_palette(name: str) -> list[Color]:
     if r.status_code != 200:
         raise ValueError("Could not get palette info from lospec!")
 
-    return [ImageColor.getrgb("#" + c) for c in r.text.splitlines()]
+    return parse_palette(["#" + c for c in r.text.splitlines()])
 
 
 def download_and_save_lospec_palette(name: str) -> list[Color]:

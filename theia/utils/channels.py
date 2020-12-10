@@ -1,4 +1,4 @@
-from utils.color import Color
+from theia.utils.color import Color
 from PIL import Image, ImageChops, ImageOps
 
 

@@ -1,6 +1,4 @@
-import shutil
-import os
-import subprocess
+import os, shutil, subprocess
 
 
 def generate_template(
