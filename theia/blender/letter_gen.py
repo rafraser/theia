@@ -74,7 +74,9 @@ def add_text(
 
     # Create the object
     bpy.ops.object.text_add(
-        enter_editmode=False, align="WORLD", location=(0, 0, 0),
+        enter_editmode=False,
+        align="WORLD",
+        location=(0, 0, 0),
     )
     ob = bpy.context.active_object
     ob.scale = (size, size, size)

@@ -1,5 +1,14 @@
+# Ignore hidden folders
+.vscode
 __pycache__
+
+# Ignore my workbench scripts
 theia/workbench.py
+theia/workbench.ipynb
+
+# Ignore input/output image files
 output/
 input/
+
+# Ignore palettes by default - use -f to add to the repo
 palettes/
