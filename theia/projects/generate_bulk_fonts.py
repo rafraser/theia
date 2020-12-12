@@ -1,4 +1,4 @@
-from generate_letter_set import main as generate_letter_set
+from theia.projects.generate_letter_set import main as generate_letter_set
 
 # This file is very scuffed I'm sorry
 
@@ -35,13 +35,13 @@ def make_font(
 
 
 if __name__ == "__main__":
-    # make_font("Roboto-Bold.ttf", "roboto")
+    make_font("Roboto-Bold.ttf", "roboto")
     # make_font("futura medium bt.ttf", "futura")
-    # make_font("coolvetica rg.ttf", "coolvetica")
+    make_font("coolvetica rg.ttf", "coolvetica")
     # make_font("GOTHIC.TTF", "centurygothic")
     # make_font("Montserrat-Medium", "montserrat")
     # make_font("HELR45W.ttf", "helvetica")
-    # make_font("LemonMilk.otf", "lemonmilk")
+    make_font("LemonMilk.otf", "lemonmilk")
     # make_font("PAPYRUS.TTF", "papyrus")
     # make_font("JOKERMAN.TTF", "jokerman")
-    make_font("wingding.ttf", "wingdings", charset=CHARSET_FULL)
+    # make_font("wingding.ttf", "wingdings", charset=CHARSET_FULL)

@@ -21,7 +21,7 @@ def main(args):
 
     # Generate SMDs in Blender
     launch_script(
-        "./python/blender/letter_gen.py",
+        "./theia/blender/letter_gen.py",
         [
             output,
             "--font",
