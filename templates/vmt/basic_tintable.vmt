@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+    "$basetexture"              "{{ path }}"
+    "$blendtintbybasealpha"     "1"
+}
