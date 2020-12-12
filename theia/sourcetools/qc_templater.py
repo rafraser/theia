@@ -14,7 +14,7 @@ def generate_template(
 
 
 def copy_template_file(
-    output_directory: str, template_name: str, template_directory: str = "qc_templates"
+    output_directory: str, template_name: str, template_directory: str = "templates/qc"
 ) -> None:
     shutil.copy(
         f"{template_directory}/{template_name}.qc",

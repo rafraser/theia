@@ -47,3 +47,18 @@ def multiply_no_alpha(image: Image, color: Color) -> Image:
     """
     full_color_image = Image.new("RGB", image.size, color)
     return ImageChops.multiply(image, full_color_image)
+
+
+def set_alpha_channel(image: Image, alpha: Image) -> Image:
+    """Override the alpha channel of an image
+
+    Args:
+        image (Image): Base image
+        alpha (Image): New alpha channel. Should be in mode 'P'
+
+    Returns:
+        Image: Base image with overriden alpha channel
+    """
+    r, g, b, _ = im.split()
+    a = alpha.convert("P")
+    return Image.merge("RGBA", (r, g, b, a))
