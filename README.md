@@ -22,6 +22,10 @@ cd python
 python -m unittest
 ```
 
+## VTFCmd
+
+Some of the scripts in this repository use VTFCmd to convert textures into the .vtf file format required by Source Engine games. To install this, run `./scripts/install_vtfcmd.sh`
+
 ## Blender
 
 Some of the scripts in this repository interface with Blender to generate 3D models. In order for these scripts to work easily, you will need to ensure that Blender is added to PATH.

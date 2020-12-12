@@ -1,3 +1,6 @@
+import subprocess
+
+
 def convert_to_vtf(infile: str, format: str = "dxt5", pause: bool = False):
     """Use VTFCmd to convert a single input image into a VTF
     VTFCmd.exe must exist at the root level for this to work
@@ -7,7 +10,7 @@ def convert_to_vtf(infile: str, format: str = "dxt5", pause: bool = False):
         format (str, optional): VTF format mode. Defaults to "dxt5".
         pause (bool, optional): Whether to wait for conversion before continuing. Defaults to False.
     """
-    args = ["./VTFCmd.exe", "-file", infile, "-format", format, "-silent"]
+    args = ["./vtfcmd/VTFCmd.exe", "-file", infile, "-format", format, "-silent"]
     sp = subprocess.Popen(args)
     if pause:
         sp.wait()
@@ -27,7 +30,7 @@ def convert_folder_to_vtf(
     """
     search = indir + "\*.png"
     args = [
-        "./VTFCmd.exe",
+        "./vtfcmd/VTFCmd.exe",
         "-folder",
         search,
         "-output",

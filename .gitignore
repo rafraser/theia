@@ -12,3 +12,6 @@ input/
 
 # Ignore palettes by default - use -f to add to the repo
 palettes/
+
+# Ignore VTFCmd
+vtfcmd/
