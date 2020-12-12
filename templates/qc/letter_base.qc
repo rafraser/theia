@@ -12,20 +12,17 @@ $collisionmodel	$collision_smd$ {
 
 $texturegroup skinfamilies
 {
-    { "letter_red" }
-    { "letter_white" }
-    { "letter_black" }
-    { "letter_blurple" }
-    { "letter_brown" }
-    { "letter_darkblue" }
-    { "letter_darkred" }
-    { "letter_gray" }
-    { "letter_green" }
-    { "letter_lightblue" }
-    { "letter_orange" }
-    { "letter_pink" }
-    { "letter_purple" }
-    { "letter_sand" }
-    { "letter_turquoise" }
-    { "letter_yellow" }
+    { "plain_white" }
+    { "tintable" }
+    { "plain_black" }
+    { "plain_grey" }
+    { "plain_red" }
+    { "plain_orange" }
+    { "plain_yellow" }
+    { "plain_green" }
+    { "plain_jade" }
+    { "plain_blue" }
+    { "plain_cyan" }
+    { "plain_pink" }
+    { "plain_purple" }
 }

@@ -51,8 +51,8 @@ def add_text(
     size=100,
     offset=0,
     extrude=0.1,
-    primary_material_name="letter_primary",
-    secondary_material_name="letter_red",
+    primary_material_name="plain_white",
+    secondary_material_name="tintable",
     quality=4,
     decimate=0,
 ):
