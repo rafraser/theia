@@ -59,6 +59,6 @@ def set_alpha_channel(image: Image, alpha: Image) -> Image:
     Returns:
         Image: Base image with overriden alpha channel
     """
-    r, g, b, _ = im.split()
-    a = alpha.convert("P")
+    r, g, b, _ = image.split()
+    a = alpha.convert("L")
     return Image.merge("RGBA", (r, g, b, a))
