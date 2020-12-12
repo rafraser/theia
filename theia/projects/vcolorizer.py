@@ -42,6 +42,16 @@ def load_image_components(name: str, dir: str = "input") -> dict:
     return result
 
 
+def validate_components(components: dict):
+    # Check that all image sizes are equally
+    size = None
+    for img in components.values():
+        if size and img.size != size:
+            raise ValueError("Image component dimensions must match!")
+        else:
+            size = img.size
+
+
 def colorize_base(components: dict, color: Color) -> Image:
     """Colorize the main part of an image
 
@@ -56,13 +66,13 @@ def colorize_base(components: dict, color: Color) -> Image:
     # If we have a mask, colorize only that part
     if components.get("mask"):
         colorized_mask = multiply(components["mask"].copy(), color)
-        canvas = canvas.paste(colorized_mask)
+        canvas.alpha_composite(colorized_mask)
     else:
         canvas = multiply(canvas, color)
 
     # Stamp on any overlays after colorizing
     if components.get("overlay"):
-        canvas = canvas.paste(components["overlay"])
+        canvas.alpha_composite(components["overlay"])
 
     return canvas
 
@@ -73,6 +83,7 @@ def main(args):
 
     for image in args.images:
         components = load_image_components(image, dir=args.input)
+        validate_components(components)
 
         for name, color in colors.items():
             recolorized = colorize_base(components, color)
