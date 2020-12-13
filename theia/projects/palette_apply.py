@@ -1,6 +1,6 @@
 from theia.utils.palettes import load_or_download_palette
 from theia.utils.channels import multiply
-from theia.utils.outline import neon_glow
+from theia.utils.outline import neon_glow, apply_outline
 from theia.utils.color import Color
 
 from PIL import Image
@@ -15,7 +15,16 @@ def mode_neon(image: Image, color: Color) -> Image:
     return neon_glow(image, color)
 
 
-OPTIONS = {"basic": mode_basic, "neon": mode_neon}
+def mode_outline(image: Image, color: Color) -> Image:
+    return apply_outline(image, color)
+
+
+OPTIONS = {
+    # stop combining onto one line
+    "basic": mode_basic,
+    "neon": mode_neon,
+    "outline": mode_outline,
+}
 
 
 def main(args):
