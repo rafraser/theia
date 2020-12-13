@@ -35,7 +35,7 @@ def main(args):
         im = Image.open(f"{args.input}/{image}.png").convert("RGBA")
         for name, color in colors.items():
             if background:
-                canvas = background.copy()
+                canvas = background.copy().resize(im.size)
                 canvas.alpha_composite(mode_function(im, color))
                 canvas.save(f"{path}{image}_{name}.png")
             else:
