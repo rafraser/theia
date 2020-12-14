@@ -53,14 +53,25 @@ def get_next_page_url(url: str) -> str:
     Returns:
         str: [description]
     """
-    split_url = url.split("/")
-    last_part = url.split("/")[-1]
-    if last_part.isnumeric():
-        next_page = str(int(last_part) + 1)
-        split_url[-1] = next_page
-        return "/".join(split_url)
+    if "/search" in url:
+        (base_url, args) = url.split("?", 1)
+        split_url = base_url.split("/")
+        last_part = base_url.split("/")[-1]
+        if last_part.isnumeric():
+            split_url[-1] = str(int(last_part) + 1)
+            base_url = "/".join(split_url)
+        else:
+            base_url = base_url + "/2"
+
+        return base_url + "?" + args
     else:
-        return url + "/2"
+        split_url = url.split("/")
+        last_part = url.split("/")[-1]
+        if last_part.isnumeric():
+            split_url[-1] = str(int(last_part) + 1)
+            return "/".join(split_url)
+        else:
+            return url + "/2"
 
 
 def download_image(id: str, path: str):
