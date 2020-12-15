@@ -32,6 +32,14 @@ def main(args):
     path = args.output + "/" + args.palette + "/"
     os.makedirs(path, exist_ok=True)
 
+    images = args.images
+    if not args.images:
+        images = [
+            f.replace(".png", "")
+            for f in os.listdir(args.input)
+            if os.path.isfile(args.input + "/" + f) and f.endswith(".png")
+        ]
+
     mode_function = OPTIONS.get(args.mode)
     if not mode_function:
         raise ValueError("Invalid mode specified!")
@@ -40,7 +48,7 @@ def main(args):
     if args.background:
         background = Image.open(f"{args.input}/{args.background}.png").convert("RGBA")
 
-    for image in args.images:
+    for image in images:
         im = Image.open(f"{args.input}/{image}.png").convert("RGBA")
         for name, color in colors.items():
             if background:
@@ -56,7 +64,7 @@ if __name__ == "__main__":
     parser.add_argument("palette")
     parser.add_argument("--input", default="input")
     parser.add_argument("--output", default="output")
-    parser.add_argument("--images", nargs="+", required=True)
+    parser.add_argument("--images", nargs="+")
     parser.add_argument("--names", nargs="+")
     parser.add_argument("--mode", default="basic")
     parser.add_argument("--background")
