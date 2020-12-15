@@ -109,6 +109,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("url")
     parser.add_argument("--path", default="output/saved_images/")
-    parser.add_argument("--max", default=0)
+    parser.add_argument("--max", default=0, type=int)
     args = parser.parse_args()
     main(args)
