@@ -29,7 +29,10 @@ OPTIONS = {
 
 def main(args):
     colors = load_or_download_palette(args.palette, save=True)
-    path = args.output + "/" + args.palette + "/"
+
+    path = f"output/{args.palette}/"
+    if args.output:
+        path = args.output
     os.makedirs(path, exist_ok=True)
 
     images = args.images
@@ -63,7 +66,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("palette")
     parser.add_argument("--input", default="input")
-    parser.add_argument("--output", default="output")
+    parser.add_argument("--output")
     parser.add_argument("--images", nargs="+")
     parser.add_argument("--names", nargs="+")
     parser.add_argument("--mode", default="basic")
