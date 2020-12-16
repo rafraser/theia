@@ -21,9 +21,7 @@ def load_palette(name: str) -> dict[str, Color]:
         list[Color]: List of RGB colors
     """
     with open(f"palettes/{name}.{PALETTE_EXT}") as f:
-        return parse_palette(
-            [line for line in f.readlines() if not line.startswith(";")]
-        )
+        return parse_palette([line for line in f.readlines()])
 
 
 def load_or_download_palette(name: str, save: bool = True) -> dict[str, Color]:
@@ -58,13 +56,40 @@ def parse_palette(strings: list[str]) -> dict[str, Color]:
     result = {}
     unnamed = 0
     for s in strings:
+        # Ignore comments
+        if s.startswith(";") or s.startswith("//") or s.startswith("/*"):
+            continue
+
+        # Ignore blank lines
+        if len(s.strip()) < 1:
+            continue
+
+        # Attempt to determine color names seperated by = or :
+        line_data = s
         if "=" in s:
-            c = s.split("=")
-            result[c[0]] = ImageColor.getrgb(c[1])
+            line_data = [clean_symbols(x) for x in s.split("=")]
+        elif ":" in s:
+            line_data = [clean_symbols(x) for x in s.split(":")]
+
+        if isinstance(line_data, list):
+            result[line_data[0]] = ImageColor.getrgb(line_data[1])
         else:
-            result[str(unnamed)] = ImageColor.getrgb(s)
+            result[str(unnamed)] = ImageColor.getrgb(clean_symbols(line_data))
             unnamed += 1
+
     return result
+
+
+def clean_symbols(word: str) -> str:
+    """Remove all non alphanumeric characters from a string
+
+    Args:
+        word (str): String to cleanse
+
+    Returns:
+        str: Cleansed string
+    """
+    return "".join([c for c in word if c.isalnum() or c == "#"])
 
 
 def parse_unnamed_palette(strings: list[str]) -> list[Color]:
