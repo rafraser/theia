@@ -104,7 +104,9 @@ def parse_unnamed_palette(strings: list[str]) -> list[Color]:
     return [ImageColor.getrgb(s) for s in strings]
 
 
-def convert_palette_to_named(colors: list[Color], names: None) -> dict[str, Color]:
+def convert_palette_to_named(
+    colors: list[Color], names: list[str] = None
+) -> dict[str, Color]:
     """Convert a list of colors into a named color palette
 
     Args:
