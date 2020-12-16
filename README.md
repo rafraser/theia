@@ -18,7 +18,6 @@ Formatting is done with [Black](https://github.com/psf/black).
 Testing is done with the standard `unittest` library. To run tests from the root directory:
 
 ```
-cd python
 python -m unittest
 ```
 

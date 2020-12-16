@@ -1,6 +1,6 @@
 import unittest
 
-from utils.color import linear_interpolate, interpolate
+from theia.utils.color import linear_interpolate, interpolate
 
 
 class TestInterpolation(unittest.TestCase):
