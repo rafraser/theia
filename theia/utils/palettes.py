@@ -1,5 +1,5 @@
-from theia.utils.color import Color, color_to_hex
-from PIL import ImageColor
+from theia.utils.color import Color, color_to_hex, distance_squared
+from PIL import Image, ImageColor
 import os, requests
 
 # Extension to use for palette files
@@ -185,3 +185,39 @@ def download_and_save_lospec_palette(name: str) -> dict[str, Color]:
     colors = download_lospec_palette(name)
     save_unnamed_palette(name, colors)
     return convert_palette_to_named(colors)
+
+
+def nearest_in_palette(
+    target: Color, palette: dict[str, Color], cache: dict[Color, Color] = None
+) -> Color:
+    """Find a color in a palette closest to a given color
+
+    Args:
+        target (Color): Color to match
+        palette (dict[str, Color]): Palette with possible color options
+        cache (dict, optional): Optional cache to boost performance
+
+    Returns:
+        Color: One color from the given palette
+    """
+    # cache lookup
+    if cache and target in cache:
+        return cache.get(target)
+
+    best_color = min(palette.values(), key=lambda c: distance_squared(c, target))
+    if cache:
+        cache[target] = best_color
+    return best_color
+
+
+def palette_from_image(image: Image, n: int) -> dict[str, Color]:
+    """Generate a palette of the most dominant colours in an image
+
+    Args:
+        image (Image): Image
+        n (int): Number of colors to pull
+
+    Returns:
+        dict[str, Color]: Palette of dominant colors. Keys will be numerical, increasing from 0
+    """
+    raise NotImplementedError()
