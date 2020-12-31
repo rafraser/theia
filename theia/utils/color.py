@@ -162,3 +162,42 @@ def color_image(color: Color, size: tuple[int, int]) -> Image:
         Image: image made with a single color
     """
     return Image.new("RGBA", size, color=color)
+
+
+def average_color(image: Image) -> Color:
+    """Get the average color of an image
+
+    Args:
+        image (Image): Image
+
+    Returns:
+        Color: Average color
+    """
+    block = image.convert("RGB").resize((1, 1))
+    return block.getdata()[0][0]
+
+
+def distance_squared(c1: Color, c2: Color) -> int:
+    """Get the squared Euclidean distance between two colors
+
+    Args:
+        c1 (Color): First color
+        c2 (Color): Second color
+
+    Returns:
+        int: Distance between the two colors
+    """
+    return (c1[0] - c2[0]) ** 2 + (c1[1] - c2[1]) ** 2 + (c1[2] - c2[2]) ** 2
+
+
+def distance_manhattan(c1: Color, c2: Color) -> int:
+    """Get the Manhattan distance between two colors
+
+    Args:
+        c1 (Color): First color
+        c2 (Color): Second color
+
+    Returns:
+        int: Distance between the two colors
+    """
+    return abs(c1[0] - c2[0]) + abs(c1[1] - c2[1]) + abs(c1[2] - c2[2])
