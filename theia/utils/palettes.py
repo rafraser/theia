@@ -1,5 +1,6 @@
-from theia.utils.color import Color, color_to_hex, distance_squared
+from theia.utils.color import Color, tidy_color, color_to_hex, distance_squared
 from PIL import Image, ImageColor
+from sklearn.cluster import KMeans
 import os, requests
 
 # Extension to use for palette files
@@ -220,4 +221,6 @@ def palette_from_image(image: Image, n: int) -> dict[str, Color]:
     Returns:
         dict[str, Color]: Palette of dominant colors. Keys will be numerical, increasing from 0
     """
-    raise NotImplementedError()
+    clusters = KMeans(n_clusters=n).fit(image.getdata())
+    colors = [tidy_color(color) for color in clusters.cluster_centers_]
+    return convert_palette_to_named(colors)

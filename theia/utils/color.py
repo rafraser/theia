@@ -21,6 +21,19 @@ def clamp(val: float) -> int:
     return floor(min(max(0, val), 255))
 
 
+def tidy_color(color: tuple[float, float, float]) -> Color:
+    """Tidy up a color tuple
+    This will ensure that all components are ints between 0 and 255
+
+    Args:
+        color (tuple[float, float, float]): Raw color tuple
+
+    Returns:
+        Color: Tidy color
+    """
+    return (clamp(color[0]), clamp(color[1]), clamp(color[2]))
+
+
 def color_to_hex(color: Color) -> str:
     """Convert a color tuple into a hexadecimal code
 
