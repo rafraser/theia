@@ -174,7 +174,7 @@ def average_color(image: Image) -> Color:
         Color: Average color
     """
     block = image.convert("RGB").resize((1, 1))
-    return block.getdata()[0][0]
+    return block.getdata()[0]
 
 
 def distance_squared(c1: Color, c2: Color) -> int:
