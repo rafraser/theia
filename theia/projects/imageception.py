@@ -1,5 +1,5 @@
 from theia.utils.color import Color, average_color, color_image
-from theia.utils.palettes import nearest_in_palette
+from theia.utils.palettes import ColorPalette, nearest_in_palette
 
 from PIL import Image
 import argparse, math, os
@@ -11,7 +11,7 @@ def load_file(input: str, file: str, size: int):
 
 
 def build_palette_mapping(
-    colors: list[Color], palette: dict[str, Color]
+    colors: list[Color], palette: ColorPalette
 ) -> dict[Color, Color]:
     return {color: nearest_in_palette(color, palette) for color in colors}
 

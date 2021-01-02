@@ -1,5 +1,9 @@
 from theia.utils.color import Color
-from theia.utils.palettes import nearest_in_palette, load_or_download_palette
+from theia.utils.palettes import (
+    ColorPalette,
+    nearest_in_palette,
+    load_or_download_palette,
+)
 
 from PIL import Image
 import argparse, math, os
@@ -8,7 +12,7 @@ MAX_COLORS = 1000000
 
 
 def build_palette_mapping(
-    colors: list[Color], palette: dict[str, Color]
+    colors: list[Color], palette: ColorPalette
 ) -> dict[Color, Color]:
     return {color: nearest_in_palette(color, palette) for color in colors}
 

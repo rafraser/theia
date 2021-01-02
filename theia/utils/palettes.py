@@ -7,8 +7,10 @@ import os, requests
 # Palettes are saved as unencoded plain text, one color per line
 PALETTE_EXT = "txt"
 
+ColorPalette = dict[str, Color]
 
-def load_palette(name: str) -> dict[str, Color]:
+
+def load_palette(name: str) -> ColorPalette:
     """Parse a palette file into a list of colors
     This loads from the palettes/ directory
 
@@ -25,7 +27,7 @@ def load_palette(name: str) -> dict[str, Color]:
         return parse_palette([line for line in f.readlines()])
 
 
-def load_or_download_palette(name: str, save: bool = True) -> dict[str, Color]:
+def load_or_download_palette(name: str, save: bool = True) -> ColorPalette:
     """Attempts to load a palette from the given palette file
     If the palette does not exist, this will attempt to download the palette from lospec
 
@@ -45,14 +47,14 @@ def load_or_download_palette(name: str, save: bool = True) -> dict[str, Color]:
             return download_lospec_palette(name)
 
 
-def parse_palette(strings: list[str]) -> dict[str, Color]:
+def parse_palette(strings: list[str]) -> ColorPalette:
     """Parse a list of strings into a list of colors
 
     Args:
         strings (list[str]): List of possible color strings
 
     Returns:
-        dict[str, Color]: Palette dictionary mapping names to colors
+        ColorPalette: Palette dictionary mapping names to colors
     """
     result = {}
     unnamed = 0
@@ -107,14 +109,14 @@ def parse_unnamed_palette(strings: list[str]) -> list[Color]:
 
 def convert_palette_to_named(
     colors: list[Color], names: list[str] = None
-) -> dict[str, Color]:
+) -> ColorPalette:
     """Convert a list of colors into a named color palette
 
     Args:
         colors (list[Color]): List of colors
 
     Returns:
-        dict[str, Color]: Named color palette
+        ColorPalette: Named color palette
     """
     if not names:
         return {str(n): c for n, c in enumerate(colors)}
@@ -125,7 +127,7 @@ def convert_palette_to_named(
             return {names[n]: c for n, c in enumerate(colors)}
 
 
-def save_palette(name: str, colors: dict[str, Color]):
+def save_palette(name: str, colors: ColorPalette):
     """Save a given palette into a text file
     This will save into the palettes/ directory
 
@@ -164,7 +166,7 @@ def download_lospec_palette(name: str) -> list[Color]:
         ValueError: If palette info could not be obtained from lospec
 
     Returns:
-        dict[str, Color]: Parsed colors from the palette
+        ColorPalette: Parsed colors from the palette
     """
     r = requests.get(f"https://lospec.com/palette-list/{name}.hex")
     if r.status_code != 200:
@@ -173,7 +175,7 @@ def download_lospec_palette(name: str) -> list[Color]:
     return parse_unnamed_palette(["#" + c for c in r.text.splitlines()])
 
 
-def download_and_save_lospec_palette(name: str) -> dict[str, Color]:
+def download_and_save_lospec_palette(name: str) -> ColorPalette:
     """Download a palette from lospec and save it to a file
     This also returns the saved palette, for your convienence
 
@@ -181,7 +183,7 @@ def download_and_save_lospec_palette(name: str) -> dict[str, Color]:
         name (str): Palette name to fetch
 
     Returns:
-        dict[str, Color]: Parsed colors from the palette
+        ColorPalette: Parsed colors from the palette
     """
     colors = download_lospec_palette(name)
     save_unnamed_palette(name, colors)
@@ -189,13 +191,13 @@ def download_and_save_lospec_palette(name: str) -> dict[str, Color]:
 
 
 def nearest_in_palette(
-    target: Color, palette: dict[str, Color], cache: dict[Color, Color] = None
+    target: Color, palette: ColorPalette, cache: dict[Color, Color] = None
 ) -> Color:
     """Find a color in a palette closest to a given color
 
     Args:
         target (Color): Color to match
-        palette (dict[str, Color]): Palette with possible color options
+        palette (ColorPalette): Palette with possible color options
         cache (dict, optional): Optional cache to boost performance
 
     Returns:
@@ -211,7 +213,7 @@ def nearest_in_palette(
     return best_color
 
 
-def palette_from_image(image: Image, n: int) -> dict[str, Color]:
+def palette_from_image(image: Image, n: int) -> ColorPalette:
     """Generate a palette of the most dominant colours in an image
 
     Args:
@@ -219,7 +221,7 @@ def palette_from_image(image: Image, n: int) -> dict[str, Color]:
         n (int): Number of colors to pull
 
     Returns:
-        dict[str, Color]: Palette of dominant colors. Keys will be numerical, increasing from 0
+        ColorPalette: Palette of dominant colors. Keys will be numerical, increasing from 0
     """
     clusters = KMeans(n_clusters=n).fit(image.getdata())
     colors = [tidy_color(color) for color in clusters.cluster_centers_]
