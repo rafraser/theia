@@ -3,9 +3,16 @@ import math
 
 
 def combine_frames(frames: list[Image], output: str, framerate: int = 50) -> None:
-    # Chrome has a fun bug where GIFs are limited to 50FPS
-    # If we're trying to make a 60FPS GIF, limit this automatically
-    #
+    """Combine a list of frame images into a single .gif
+
+    Note that Chrome has a fun bug where GIFs are limited to 50FPS
+    This function will automatically clamp framerates to 50FPS
+
+    Args:
+        frames (list[Image]): List of frame images
+        output (str): Path to save output GIF, including extension
+        framerate (int, optional): Framerate of the gif. Max of 50FPS. Defaults to 50.
+    """
     if framerate == 60:
         framerate = 50
     durations = [math.floor(1000 / framerate)] * len(frames)

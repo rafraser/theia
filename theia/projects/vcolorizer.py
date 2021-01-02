@@ -59,8 +59,8 @@ def colorize_base(components: dict, color: Color) -> Image:
     """Colorize the main part of an image
 
     Args:
-        components (dict): [description]
-        color (Color): [description]
+        components (dict): Dictionary of vcolorizer "components"
+        color (Color): Color to apply to image
 
     Returns:
         Image: Colorized image

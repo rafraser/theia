@@ -111,10 +111,10 @@ def convert_palette_to_named(
     """Convert a list of colors into a named color palette
 
     Args:
-        colors (list[Color]): [description]
+        colors (list[Color]): List of colors
 
     Returns:
-        dict[str, Color]: [description]
+        dict[str, Color]: Named color palette
     """
     if not names:
         return {str(n): c for n, c in enumerate(colors)}

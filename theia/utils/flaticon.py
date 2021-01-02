@@ -2,12 +2,12 @@ import argparse, os, requests, re
 
 
 def download_icons_from_page(url: str, path: str, max_images: int = 0):
-    """[summary]
+    """Download all Flaticons from a given Flaticon search URL
 
     Args:
         url (str): URL to fetch icons from
         path (str): Output directory
-        max_images (int, optional): [description]. If not specified, will continue until fully downloaded.
+        max_images (int, optional): Maximum number of images to download. If not specified, will continue until fully downloaded.
 
     Raises:
         Exception: If the URL could not be loaded
@@ -33,25 +33,25 @@ def download_icons_from_page(url: str, path: str, max_images: int = 0):
 
 
 def has_next_page(content: str) -> bool:
-    """[summary]
+    """Check whether a Flaticon search page has another page
 
     Args:
-        content (str): [description]
+        content (str): Contents of the current Flaticon search page
 
     Returns:
-        bool: [description]
+        bool: Whether a next page exists
     """
     return "<span>Next page</span>" in content
 
 
 def get_next_page_url(url: str) -> str:
-    """[summary]
+    """Get the next page of a Flaticon search
 
     Args:
-        url (str): [description]
+        url (str): URL for the current flaticon page
 
     Returns:
-        str: [description]
+        str: URL for the next flaticon page
     """
     if "/search" in url:
         (base_url, args) = url.split("?", 1)
@@ -78,8 +78,8 @@ def download_image(id: str, path: str):
     """Download the png image version for a given Flaticon ID
 
     Args:
-        id (str): [description]
-        path (str): [description]
+        id (str): Flaticon ID
+        path (str): Path to save to
     """
     url = url_from_icon_id(id)
     resp = requests.get(url)
@@ -92,10 +92,10 @@ def url_from_icon_id(id: str) -> str:
     """Get a downloadable URL from a string ID
 
     Args:
-        id (str): [description]
+        id (str): Flaticon ID
 
     Returns:
-        str: [description]
+        str: URL pointing to the .png file for this icon
     """
     return f"https://image.flaticon.com/icons/png/512/{id[:-3]}/{id}.png"
 

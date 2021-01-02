@@ -75,7 +75,7 @@ def interpolate(
         f (Callable[[float], float]): Interpolation function. Should map 0..1 to 0..1
 
     Returns:
-        Color: [description]
+        Color: Interpolated color value
     """
     return linear_interpolate(color1, color2, f(p))
 
