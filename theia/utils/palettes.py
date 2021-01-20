@@ -223,6 +223,12 @@ def palette_from_image(image: Image, n: int) -> ColorPalette:
     Returns:
         ColorPalette: Palette of dominant colors. Keys will be numerical, increasing from 0
     """
+    # KMeans takes a while on larger datasets
+    # Resize any large images to be quite small
+    # This will hopefully keep the overall composition similar
+    if any(x > 150 for x in image.size):
+        image = image.resize((150, 150))
+
     clusters = KMeans(n_clusters=n).fit(image.getdata())
     colors = [tidy_color(color) for color in clusters.cluster_centers_]
     return convert_palette_to_named(colors)
