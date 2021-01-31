@@ -12,7 +12,9 @@ import argparse, math, os
 MAX_COLORS = 1000000
 
 
-def build_palette_mapping(colors: list[Color], palette: ColorPalette) -> dict[Color, Color]:
+def build_palette_mapping(
+    colors: list[Color], palette: ColorPalette
+) -> dict[Color, Color]:
     return {color: nearest_in_palette(color, palette) for color in colors}
 
 

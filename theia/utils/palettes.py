@@ -106,7 +106,9 @@ def parse_unnamed_palette(strings: list[str]) -> list[Color]:
     return [ImageColor.getrgb(s) for s in strings]
 
 
-def convert_palette_to_named(colors: list[Color], names: list[str] = None) -> ColorPalette:
+def convert_palette_to_named(
+    colors: list[Color], names: list[str] = None
+) -> ColorPalette:
     """Convert a list of colors into a named color palette
 
     Args:
@@ -134,7 +136,9 @@ def save_palette(name: str, colors: ColorPalette):
     """
     os.makedirs("palettes", exist_ok=True)
     with open(f"palettes/{name}.{PALETTE_EXT}", "w") as f:
-        f.writelines([name + "=" + color_to_hex(c) + "\n" for name, c in colors.items()])
+        f.writelines(
+            [name + "=" + color_to_hex(c) + "\n" for name, c in colors.items()]
+        )
 
 
 def save_unnamed_palette(name: str, colors: list[Color]):
@@ -185,7 +189,9 @@ def download_and_save_lospec_palette(name: str) -> ColorPalette:
     return convert_palette_to_named(colors)
 
 
-def nearest_in_palette(target: Color, palette: ColorPalette, cache: dict[Color, Color] = None) -> Color:
+def nearest_in_palette(
+    target: Color, palette: ColorPalette, cache: dict[Color, Color] = None
+) -> Color:
     """Find a color in a palette closest to a given color
 
     Args:

@@ -63,7 +63,9 @@ def linear_interpolate(color1: Color, color2: Color, p: float) -> Color:
     return (floor(r), floor(g), floor(b))
 
 
-def interpolate(color1: Color, color2: Color, p: float, f: Callable[[float], float]) -> Color:
+def interpolate(
+    color1: Color, color2: Color, p: float, f: Callable[[float], float]
+) -> Color:
     """Generic color interpolation function
 
     Args:

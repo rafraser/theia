@@ -10,7 +10,10 @@ GRAY_192 = (192, 192, 192)
 GRAY_128 = (128, 128, 128)
 GRAY_0 = (0, 0, 0)
 
-def draw_color_box(draw, pos, c_fill, size, c_outer=GRAY_192, c_top=GRAY_128, c_inner=GRAY_0):
+
+def draw_color_box(
+    draw, pos, c_fill, size, c_outer=GRAY_192, c_top=GRAY_128, c_inner=GRAY_0
+):
     x0, y0 = pos[0], pos[1]
     x1, y1 = x0 + size + 2, y0 + size + 2
 
@@ -18,6 +21,7 @@ def draw_color_box(draw, pos, c_fill, size, c_outer=GRAY_192, c_top=GRAY_128, c_
     draw.rectangle((x0 + 1, y0 + 1, x1 - 1, y1 - 1), fill=c_fill)
     draw.line((x0, y1, x0, y0, x1, y0), fill=c_top)
     draw.line((x0 + 1, y1 - 1, x0 + 1, y0 + 1, x1 - 1, y0 + 1), fill=c_inner)
+
 
 def main(args):
     image = Image.open(args.input).convert("RGB")
@@ -57,7 +61,6 @@ def main(args):
         draw.line((xx + 1, first_h + 4, xx + first_w, first_h + 4), fill=GRAY_0)
         xx += draw.textsize(option, font=font)[0] + 6
 
-
     # Tools
 
     # Palette background
@@ -67,8 +70,24 @@ def main(args):
 
     # Selected colors
     draw_color_box(draw, (4, height - 66), GRAY_222, 32)
-    draw_color_box(draw, (4 + 14, height - 66 + 14), get_color(1), 14, c_outer=GRAY_128, c_top=GRAY_255, c_inner=GRAY_192)
-    draw_color_box(draw, (4 + 5, height - 66 + 5), get_color(0), 14, c_outer=GRAY_128, c_top=GRAY_255, c_inner=GRAY_192)
+    draw_color_box(
+        draw,
+        (4 + 14, height - 66 + 14),
+        get_color(1),
+        14,
+        c_outer=GRAY_128,
+        c_top=GRAY_255,
+        c_inner=GRAY_192,
+    )
+    draw_color_box(
+        draw,
+        (4 + 5, height - 66 + 5),
+        get_color(0),
+        14,
+        c_outer=GRAY_128,
+        c_top=GRAY_255,
+        c_inner=GRAY_192,
+    )
 
     # Palette colors
     for i in range(len(color_groups)):
@@ -95,6 +114,8 @@ if __name__ == "__main__":
     parser.add_argument("input")
     parser.add_argument("output")
     parser.add_argument("--num", default=12)
-    parser.add_argument("--helptext", default="For Help, click Help Topics on the Help Menu")
+    parser.add_argument(
+        "--helptext", default="For Help, click Help Topics on the Help Menu"
+    )
     args = parser.parse_args()
     main(args)
