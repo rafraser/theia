@@ -1,6 +1,5 @@
 from theia.utils.color import Color, tidy_color, color_to_hex, distance_squared
 from PIL import Image, ImageColor
-from sklearn.cluster import KMeans
 import os, requests
 
 # Extension to use for palette files
@@ -107,9 +106,7 @@ def parse_unnamed_palette(strings: list[str]) -> list[Color]:
     return [ImageColor.getrgb(s) for s in strings]
 
 
-def convert_palette_to_named(
-    colors: list[Color], names: list[str] = None
-) -> ColorPalette:
+def convert_palette_to_named(colors: list[Color], names: list[str] = None) -> ColorPalette:
     """Convert a list of colors into a named color palette
 
     Args:
@@ -137,9 +134,7 @@ def save_palette(name: str, colors: ColorPalette):
     """
     os.makedirs("palettes", exist_ok=True)
     with open(f"palettes/{name}.{PALETTE_EXT}", "w") as f:
-        f.writelines(
-            [name + "=" + color_to_hex(c) + "\n" for name, c in colors.items()]
-        )
+        f.writelines([name + "=" + color_to_hex(c) + "\n" for name, c in colors.items()])
 
 
 def save_unnamed_palette(name: str, colors: list[Color]):
@@ -190,9 +185,7 @@ def download_and_save_lospec_palette(name: str) -> ColorPalette:
     return convert_palette_to_named(colors)
 
 
-def nearest_in_palette(
-    target: Color, palette: ColorPalette, cache: dict[Color, Color] = None
-) -> Color:
+def nearest_in_palette(target: Color, palette: ColorPalette, cache: dict[Color, Color] = None) -> Color:
     """Find a color in a palette closest to a given color
 
     Args:
@@ -211,24 +204,3 @@ def nearest_in_palette(
     if cache:
         cache[target] = best_color
     return best_color
-
-
-def palette_from_image(image: Image, n: int) -> ColorPalette:
-    """Generate a palette of the most dominant colours in an image
-
-    Args:
-        image (Image): Image
-        n (int): Number of colors to pull
-
-    Returns:
-        ColorPalette: Palette of dominant colors. Keys will be numerical, increasing from 0
-    """
-    # KMeans takes a while on larger datasets
-    # Resize any large images to be quite small
-    # This will hopefully keep the overall composition similar
-    if any(x > 150 for x in image.size):
-        image = image.resize((150, 150))
-
-    clusters = KMeans(n_clusters=n).fit(image.getdata())
-    colors = [tidy_color(color) for color in clusters.cluster_centers_]
-    return convert_palette_to_named(colors)
