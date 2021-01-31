@@ -25,7 +25,9 @@ def images_from_path(filepath: str, input_root: str = "input") -> list[str]:
     if path.isfile(filepath):
         return [filepath]
     elif path.isdir(filepath):
-        return [f for f in os.listdir(filepath) if path.isfile(path.join(filepath, f))]
+        return [
+            fp for f in listdir(filepath) if path.isfile(fp := path.join(filepath, f))
+        ]
 
     return []
 
@@ -41,7 +43,9 @@ def load_images_from_path(filepath: str, input_root: str = "input") -> list[Imag
     Returns:
         list[Image]: All images loaded from the given path
     """
-    return [Image.open(f).convert("RGBA") for f in images_from_path(filepath, input_root)]
+    return [
+        Image.open(f).convert("RGBA") for f in images_from_path(filepath, input_root)
+    ]
 
 
 def load_from_path(filepath: str, input_root: str = "input") -> list[tuple[str, Image]]:
@@ -56,4 +60,7 @@ def load_from_path(filepath: str, input_root: str = "input") -> list[tuple[str, 
     Returns:
         list[Image]: All images loaded from the given path
     """
-    return [(Path(f).stem, Image.open(f).convert("RGBA")) for f in images_from_path(filepath, input_root)]
+    return [
+        (Path(f).stem, Image.open(f).convert("RGBA"))
+        for f in images_from_path(filepath, input_root)
+    ]

@@ -1,19 +1,14 @@
 import argparse, os, math
 from theia.utils.channels import invert_with_alpha
+from theia.utils.image import load_from_path
 from PIL import Image
 
 
 def main(args):
     os.makedirs(args.output, exist_ok=True)
-    images = [
-        f
-        for f in os.listdir(args.input)
-        if os.path.isfile(args.input + "/" + f) and f.endswith(".png")
-    ]
+    images = load_from_path(args.input)
 
-    for image in images:
-        img = Image.open(args.input + "/" + image).convert("RGBA")
-
+    for (name, img) in images:
         # Invert the image
         if args.invert:
             img = invert_with_alpha(img)
@@ -31,7 +26,7 @@ def main(args):
 
         # Save to new location
         # If input = output, this will overwrite
-        img.save(args.output + "/" + image)
+        img.save(os.path.join(args.output, f"{name}.png"))
 
 
 if __name__ == "__main__":

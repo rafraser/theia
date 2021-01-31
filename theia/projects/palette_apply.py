@@ -2,6 +2,7 @@ from theia.utils.palettes import load_or_download_palette
 from theia.utils.channels import multiply
 from theia.utils.outline import neon_glow, apply_outline
 from theia.utils.color import Color
+from theia.utils.image import load_from_path
 
 from PIL import Image
 import argparse, os
@@ -29,19 +30,12 @@ OPTIONS = {
 
 def main(args):
     colors = load_or_download_palette(args.palette, save=True)
+    images = load_from_path(args.input)
 
     path = f"output/{args.palette}/"
     if args.output:
         path = args.output
     os.makedirs(path, exist_ok=True)
-
-    images = args.images
-    if not args.images:
-        images = [
-            f.replace(".png", "")
-            for f in os.listdir(args.input)
-            if os.path.isfile(args.input + "/" + f) and f.endswith(".png")
-        ]
 
     mode_function = OPTIONS.get(args.mode)
     if not mode_function:
@@ -49,17 +43,18 @@ def main(args):
 
     background = None
     if args.background:
-        background = Image.open(f"{args.input}/{args.background}.png").convert("RGBA")
+        background = Image.open(args.background).convert("RGBA")
 
-    for image in images:
-        im = Image.open(f"{args.input}/{image}.png").convert("RGBA")
-        for name, color in colors.items():
+    for (iname, im) in images:
+        for cname, color in colors.items():
             if background:
                 canvas = background.copy().resize(im.size)
                 canvas.alpha_composite(mode_function(im, color))
-                canvas.save(f"{path}{image}_{name}.png")
+                canvas.save(os.path.join(path, f"{iname}_{cname}.png"))
             else:
-                mode_function(im, color).save(f"{path}{image}_{name}.png")
+                mode_function(im, color).save(
+                    os.path.join(path, f"{iname}_{cname}.png")
+                )
 
 
 if __name__ == "__main__":
@@ -67,8 +62,6 @@ if __name__ == "__main__":
     parser.add_argument("palette")
     parser.add_argument("--input", default="input")
     parser.add_argument("--output")
-    parser.add_argument("--images", nargs="+")
-    parser.add_argument("--names", nargs="+")
     parser.add_argument("--mode", default="basic")
     parser.add_argument("--background")
     args = parser.parse_args()

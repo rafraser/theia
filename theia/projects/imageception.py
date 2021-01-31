@@ -1,5 +1,10 @@
 from theia.utils.color import Color, average_color, color_image
-from theia.utils.palettes import ColorPalette, nearest_in_palette
+from theia.utils.palettes import (
+    ColorPalette,
+    nearest_in_palette,
+    convert_palette_to_named,
+)
+from theia.utils.image import load_from_path, load_images_from_path
 
 from PIL import Image
 import argparse, math, os
@@ -23,34 +28,33 @@ def apply_palette_mapping(image: Image, mapping: dict[Color, Color]) -> Image:
 
 
 def main(args):
-    # os.makedirs(args.output, exist_ok=True)
+    os.makedirs(args.output, exist_ok=True)
 
     # Build a palette up from the images in our palette directory
-    palette_images = [
-        f
-        for f in os.listdir(args.palette)
-        if os.path.isfile(args.palette + "/" + f) and f.endswith(".png")
-    ]
-    pixels = {f: load_file(args.palette, f, args.pixelsize) for f in palette_images}
-    palette = {f: average_color(pixels[f]) for f in pixels}
-    pixels = {palette[f]: pixels[f] for f in palette}
+    pixels = {
+        average_color(f): f.resize((args.pixelsize, args.pixelsize))
+        for f in load_images_from_path(args.palette)
+    }
+    palette = convert_palette_to_named(pixels.keys())
 
     # Load image and map to palette
-    base = Image.open(args.input).convert("RGB")
-    colors = [c[1] for c in base.getcolors(100000)]
-    color_mapping = build_palette_mapping(colors, palette)
+    for name, image in load_from_path(args.input):
+        base = image.convert("RGB")
+        colors = [c[1] for c in base.getcolors(100000)]
+        color_mapping = build_palette_mapping(colors, palette)
 
-    # Put it all together
-    canvas = Image.new("RGBA", tuple([args.pixelsize * x for x in base.size]))
-    w, h = base.size
-    locations = [
-        (y * args.pixelsize, x * args.pixelsize) for x in range(w) for y in range(h)
-    ]
-    for k, v in enumerate(base.getdata()):
-        pixel = pixels.get(color_mapping.get(v))
-        canvas.paste(pixel, locations[k])
+        # Put it all together
+        canvas = Image.new("RGB", tuple([args.pixelsize * x for x in base.size]))
+        w, h = base.size
+        locations = [
+            (y * args.pixelsize, x * args.pixelsize) for x in range(w) for y in range(h)
+        ]
 
-    canvas.save(args.output)
+        for k, v in enumerate(base.getdata()):
+            pixel = pixels.get(color_mapping.get(v))
+            canvas.paste(pixel, locations[k])
+
+        canvas.save(os.path.join(args.output, f"{name}.png"))
 
 
 if __name__ == "__main__":
@@ -58,6 +62,6 @@ if __name__ == "__main__":
     parser.add_argument("palette")
     parser.add_argument("input")
     parser.add_argument("output")
-    parser.add_argument("--pixelsize", default=32)
+    parser.add_argument("--pixelsize", default=32, type=int)
     args = parser.parse_args()
     main(args)

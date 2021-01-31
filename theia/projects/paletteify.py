@@ -4,6 +4,7 @@ from theia.utils.palettes import (
     nearest_in_palette,
     load_or_download_palette,
 )
+from theia.utils.image import load_from_path
 
 from PIL import Image
 import argparse, math, os
@@ -11,9 +12,7 @@ import argparse, math, os
 MAX_COLORS = 1000000
 
 
-def build_palette_mapping(
-    colors: list[Color], palette: ColorPalette
-) -> dict[Color, Color]:
+def build_palette_mapping(colors: list[Color], palette: ColorPalette) -> dict[Color, Color]:
     return {color: nearest_in_palette(color, palette) for color in colors}
 
 
@@ -25,19 +24,14 @@ def apply_palette_mapping(image: Image, mapping: dict[Color, Color]) -> Image:
 
 def main(args):
     os.makedirs(args.output, exist_ok=True)
-    images = [
-        f
-        for f in os.listdir(args.input)
-        if os.path.isfile(args.input + "/" + f) and f.endswith(".png")
-    ]
+    images = load_from_path(args.input)
     palette = load_or_download_palette(args.palette, save=True)
 
-    for image in images:
-        img = Image.open(args.input + "/" + image).convert("RGBA")
+    for (name, img) in images:
         colors = [c[1] for c in img.getcolors(MAX_COLORS)]
         color_mapping = build_palette_mapping(colors, palette)
         img = apply_palette_mapping(img, color_mapping)
-        img.save(args.output + "/" + image)
+        img.save(os.path.join(args.output, f"{name}.png"))
 
 
 if __name__ == "__main__":
