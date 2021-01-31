@@ -3,9 +3,7 @@ from theia.utils.channels import invert_with_alpha, multiply_no_alpha
 from theia.utils.color import clamp, Color
 
 
-def apply_outline(
-    im: Image, color: Color, width: int = 8, softness: int = 127
-) -> Image:
+def apply_outline(im: Image, color: Color, width: int = 8, softness: int = 127) -> Image:
     """Apply an outline to an image
 
     Args:
@@ -81,9 +79,7 @@ def drop_shadow(
     result = Image.merge("RGBA", (r, g, b, a))
 
     # Arrange everything neatly on a canvas
-    canvas = Image.new(
-        "RGBA", [sum(x) for x in zip(im.size, offset)], (255, 255, 255, 0)
-    )
+    canvas = Image.new("RGBA", [sum(x) for x in zip(im.size, offset)], (255, 255, 255, 0))
     canvas.paste(result, offset, result)
     canvas = canvas.crop((0, 0, im.size[0], im.size[1]))
     canvas = Image.alpha_composite(canvas, im)
