@@ -132,6 +132,17 @@ def shift_columns(
     return result_grid
 
 
+def triangle(grid: Grid, step: int = 1, symmetric: bool = True):
+    def triangle_row(row, shift):
+        if shift >= 1:
+            ss = shift * step
+            return row[ss:-ss] if symmetric else row[ss:]
+        else:
+            return row
+
+    return [[p for p in triangle_row(row, idx)] for idx, row in enumerate(grid)]
+
+
 def flatten(grid: Grid) -> list[Point]:
     return [p for row in grid for p in row]
 
@@ -163,5 +174,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     grid = build(args.size, args.num)
-    grid = jitter(grid, variance_list=[16, -8])
     visualise(grid, 512, 16)
