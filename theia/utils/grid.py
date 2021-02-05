@@ -1,5 +1,6 @@
 import argparse
 import math
+from typing import Callable
 from PIL import Image, ImageDraw
 from random import randrange, choice
 
@@ -238,6 +239,19 @@ def transpose(grid: Grid) -> Grid:
     """
     swapped_grid = [[(yy, xx) for (xx, yy) in row] for row in grid]
     return list(map(list, zip(*swapped_grid)))
+
+
+def apply(grid: Grid, func: Callable[[Point], Point]) -> Grid:
+    """Apply a pointwise function to all points of a grid
+
+    Args:
+        grid (Grid): Grid to apply function to
+        func (callable): Pointwise transformation function
+
+    Returns:
+        Grid: Transformed grid
+    """
+    return [[func(p) for p in row] for row in grid]
 
 
 def visualise(grid: Grid, size: int, padding: int):
