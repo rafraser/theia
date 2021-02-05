@@ -10,6 +10,15 @@ Grid = list[Row]
 
 
 def build(size: int, num: int) -> Grid:
+    """Build a basic square grid
+
+    Args:
+        size (int): Size (width or height) of the grid
+        num (int): Number of points in each row and column
+
+    Returns:
+        Grid: Simple grid with equally spaced points
+    """
     step = size / (num - 1)
 
     return [
@@ -20,6 +29,18 @@ def build(size: int, num: int) -> Grid:
 def build_radial(
     size: int, num_angular: int, num_radius: int, offset: int = 0, center: bool = True
 ) -> Grid:
+    """Build a radial grid
+
+    Args:
+        size (int): Size (width or height) of the grid
+        num_angular (int): Number of points in each 'circle'
+        num_radius (int): Number of 'circles'
+        offset (int, optional): Angular offset, in degrees. Defaults to 0.
+        center (bool, optional): Add an extra point at the center of the radial grid?. Defaults to True.
+
+    Returns:
+        Grid: Radial grid with equally spaced points
+    """
     rad_step = (size // 2) / num_radius
     ang_step = (2 * math.pi) / num_angular
     ang_off = math.radians(offset)
@@ -51,6 +72,24 @@ def jitter(
     clamp: bool = False,
     variance_list: list[int] = None,
 ) -> Grid:
+    """Randomly jitter all points in a grid
+    Jitter will apply to both the x and y axises of the grid
+
+    If a variance list is given, each point will be jittered by a random value from the jitter list
+    If one of min_variance or max_variance is specified, points will be jittered from -v to v
+    If both min_variance or max_variance is specified, points will be jittered from -max to -min or min to max
+
+    Args:
+        grid (Grid): Grid points to jitter
+        min_variance (int, optional): Minimum jitter amount. Defaults to None.
+        max_variance (int, optional): Maximum jitter amount. Defaults to None.
+        size (int, optional): Grid size - useful for clamping. Defaults to None.
+        clamp (bool, optional): Whether to stop points leaving the bounds. Defaults to False.
+        variance_list (list[int], optional): List of possible jitter amounts. Defaults to None.
+
+    Returns:
+        Grid: Transformed grid, with each point 'jittered'
+    """
     # If no size is specified, grab the largest point we have
     # if jittering a grid twice this could go badly...
     if size == None:
@@ -102,6 +141,18 @@ def jitter(
 def shift_rows(
     grid: Grid, offset: int, mod: int = 2, size: int = None, clamp: bool = False
 ) -> Grid:
+    """Shift Nth rows of a grid by a fixed amount
+
+    Args:
+        grid (Grid): Grid to shift rows of
+        offset (int): How much to shift each column by
+        mod (int, optional): Shift every X rows. Defaults to 2.
+        size (int, optional): Size of the grid - used if clamping is enabled. Defaults to None.
+        clamp (bool, optional): Whether to remove points outside the bounds. Defaults to False.
+
+    Returns:
+        Grid: Transformed grid, with shifted rows
+    """
     result_grid = []
     for row_index, row in enumerate(grid):
         if row_index % mod == 0:
@@ -120,6 +171,18 @@ def shift_rows(
 def shift_columns(
     grid: Grid, offset: int, mod: int = 2, size: int = None, clamp: bool = False
 ) -> Grid:
+    """Shift Nth columns of a grid by a fixed amount
+
+    Args:
+        grid (Grid): Grid to shift columns of
+        offset (int): How much to shift each column by
+        mod (int, optional): Shift every X columns. Defaults to 2.
+        size (int, optional): Size of the grid - used if clamping is enabled. Defaults to None.
+        clamp (bool, optional): Whether to remove points outside the bounds. Defaults to False.
+
+    Returns:
+        Grid: Transformed grid, with shifted columns
+    """
     result_grid = []
     for row in grid:
         new_row = []
@@ -132,7 +195,21 @@ def shift_columns(
     return result_grid
 
 
-def triangle(grid: Grid, step: int = 1, symmetric: bool = True):
+def triangle(grid: Grid, step: int = 1, symmetric: bool = True) -> Grid:
+    """Turn a rectangular grid into a triangular grid
+
+    If symmetric is enabled, an isometric triangle will be made
+    If symmetric is not enabled, a right angle triangle will be made
+
+    Args:
+        grid (Grid): Grid to adjust
+        step (int, optional): How many points to remove from each 'level'. Defaults to 1.
+        symmetric (bool, optional): Should points be removed from both sides of the row?. Defaults to True.
+
+    Returns:
+        Grid: Transformed grid
+    """
+
     def triangle_row(row, shift):
         if shift >= 1:
             ss = shift * step
@@ -144,15 +221,35 @@ def triangle(grid: Grid, step: int = 1, symmetric: bool = True):
 
 
 def flatten(grid: Grid) -> list[Point]:
+    """Flatten a grid into a single list of points
+
+    Args:
+        grid (Grid): Grid to flatten
+
+    Returns:
+        list[Point]: List of (x, y) coordinates
+    """
     return [p for row in grid for p in row]
 
 
 def transpose(grid: Grid) -> Grid:
+    """Transpose (swap rows and columns) a grid
+
+    Args:
+        grid (Grid): Grid to tranpose
+
+    Returns:
+        Grid: Transposed grid
+    """
     swapped_grid = [[(yy, xx) for (xx, yy) in row] for row in grid]
     return list(map(list, zip(*swapped_grid)))
 
 
 def visualise(grid: Grid, size: int, padding: int):
+    """Helper function to visualise a grid
+
+    Not intended for external use
+    """
     img = Image.new("RGB", (size + padding * 2, size + padding * 2), color="#2d3436")
     draw = ImageDraw.Draw(img)
 
