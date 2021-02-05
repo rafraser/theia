@@ -19,10 +19,29 @@ def build(size: int, num: int) -> Grid:
 def build_radial(
     size: int, num_angular: int, num_radius: int, offset: int = 0, center: bool = True
 ) -> Grid:
-    pass
+    rad_step = (size // 2) / num_radius
+    ang_step = (2 * math.pi) / num_angular
+    ang_off = math.radians(offset)
+
+    xx = size // 2
+    yy = size // 2
+
+    def rad_to_cart(ang, rad):
+        return (xx + round(rad * math.cos(ang)), yy + round(rad * math.sin(ang)))
+
+    grid = [
+        [
+            rad_to_cart(ang_off + (ang_step * an), rad_step * (rn + 1))
+            for an in range(num_angular)
+        ]
+        for rn in range(num_radius)
+    ]
+
+    if center:
+        grid.insert(0, [(xx, yy)])
+    return grid
 
 
-def jitter(grid: Grid, variance: int, size: int = None, clamp: bool = False) -> Grid:
     # If no size is specified, grab the largest point we have
     # if jittering a grid twice this could go badly...
     if size == None:
