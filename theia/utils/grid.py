@@ -96,6 +96,7 @@ def jitter(
         size = max(grid[0], key=lambda x: x[0])[0]
 
     # Argument handling - there's a few cases
+    # This jit function is then applied to each point to spice em up
     if variance_list is not None and len(variance_list) > 0:
 
         def jit(val):
@@ -121,21 +122,15 @@ def jitter(
         def jit(val):
             return val + choice([-1, 1]) * min_variance
 
-    # I'd love to make this into a neater list comprehension but this will have to suffice
-    # - Apply a random jitter to each point
-    # - If applicable, filter out any points that go out of bounds
-    result_grid = []
-    for row in grid:
-        result_row = []
-        for (xx, yy) in row:
-            (jit_x, jit_y) = (jit(xx), jit(yy))
-            if clamp:
-                if jit_x < 0 or jit_x > size or jit_y < 0 or jit_y > size:
-                    continue
+    def clampf(x):
+        # Clamp a point 0 <= x <= size *only* if the clamp flag is enabled
+        if clamp:
+            return max(0, min(x, size))
+        else:
+            return x
 
-            result_row.append((jit_x, jit_y))
-        result_grid.append(result_row)
-    return result_grid
+    # Jit (and optionally clamp) all points in the grid
+    return [[(clampf(jit(xx)), clampf(jit(yy))) for (xx, yy) in row] for row in grid]
 
 
 def shift_rows(
