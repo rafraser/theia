@@ -1,6 +1,7 @@
 import argparse
+import math
 from PIL import Image, ImageDraw
-from random import randrange
+from random import randrange, choice
 
 # Typings
 Point = tuple[int, int]
@@ -42,13 +43,44 @@ def build_radial(
     return grid
 
 
+def jitter(
+    grid: Grid,
+    min_variance: int = None,
+    max_variance: int = None,
+    size: int = None,
+    clamp: bool = False,
+    variance_list: list[int] = None,
+) -> Grid:
     # If no size is specified, grab the largest point we have
     # if jittering a grid twice this could go badly...
     if size == None:
         size = max(grid[0], key=lambda x: x[0])[0]
 
-    def jit(val):
-        return val + randrange(-variance, variance)
+    # Argument handling - there's a few cases
+    if variance_list is not None and len(variance_list) > 0:
+
+        def jit(val):
+            return val + choice(variance_list)
+
+    elif min_variance is None and max_variance is None:
+
+        def jit(val):
+            return val
+
+    elif min_variance is None and max_variance is not None:
+
+        def jit(val):
+            return val + choice([-1, 1]) * randrange(0, max_variance)
+
+    elif max_variance is None and min_variance is not None:
+
+        def jit(val):
+            return val + choice([-1, 1]) * randrange(0, min_variance)
+
+    elif min_variance >= max_variance:
+
+        def jit(val):
+            return val + choice([-1, 1]) * min_variance
 
     # I'd love to make this into a neater list comprehension but this will have to suffice
     # - Apply a random jitter to each point
@@ -126,11 +158,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     grid = build(args.size, args.num)
-    print(grid)
-    grid = shift_rows(grid, 32, size=args.size, clamp=True)
-    grid = shift_columns(grid, -32, mod=3, size=args.size, clamp=True)
-    # grid = jitter(grid, 8, clamp=True)
-    print(grid)
-
+    grid = jitter(grid, variance_list=[16, -8])
     visualise(grid, 512, 16)
-    print(grid)
