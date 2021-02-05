@@ -136,6 +136,11 @@ def flatten(grid: Grid) -> list[Point]:
     return [p for row in grid for p in row]
 
 
+def transpose(grid: Grid) -> Grid:
+    swapped_grid = [[(yy, xx) for (xx, yy) in row] for row in grid]
+    return list(map(list, zip(*swapped_grid)))
+
+
 def visualise(grid: Grid, size: int, padding: int):
     img = Image.new("RGB", (size + padding * 2, size + padding * 2), color="#2d3436")
     draw = ImageDraw.Draw(img)
