@@ -22,7 +22,7 @@ def build_radial(
     pass
 
 
-def jitter(grid: Grid, variance, size=None, clamp=False) -> Grid:
+def jitter(grid: Grid, variance: int, size: int = None, clamp: bool = False) -> Grid:
     # If no size is specified, grab the largest point we have
     # if jittering a grid twice this could go badly...
     if size == None:
@@ -45,6 +45,39 @@ def jitter(grid: Grid, variance, size=None, clamp=False) -> Grid:
 
             result_row.append((jit_x, jit_y))
         result_grid.append(result_row)
+    return result_grid
+
+
+def shift_rows(
+    grid: Grid, offset: int, mod: int = 2, size: int = None, clamp: bool = False
+) -> Grid:
+    result_grid = []
+    for row_index, row in enumerate(grid):
+        if row_index % mod == 0:
+            result_grid.append(
+                [
+                    (x_off, yy)
+                    for (xx, yy) in row
+                    if (x_off := xx + offset) >= 0 and x_off <= size
+                ]
+            )
+        else:
+            result_grid.append(row)
+    return result_grid
+
+
+def shift_columns(
+    grid: Grid, offset: int, mod: int = 2, size: int = None, clamp: bool = False
+) -> Grid:
+    result_grid = []
+    for row in grid:
+        new_row = []
+        for col_index, (xx, yy) in enumerate(row):
+            if col_index % mod == 0:
+                new_row.append((xx, yy + offset))
+            else:
+                new_row.append((xx, yy))
+        result_grid.append(new_row)
     return result_grid
 
 
@@ -75,7 +108,9 @@ if __name__ == "__main__":
 
     grid = build(args.size, args.num)
     print(grid)
-    grid = jitter(grid, 8, clamp=True)
+    grid = shift_rows(grid, 32, size=args.size, clamp=True)
+    grid = shift_columns(grid, -32, mod=3, size=args.size, clamp=True)
+    # grid = jitter(grid, 8, clamp=True)
     print(grid)
 
     visualise(grid, 512, 16)
