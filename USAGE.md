@@ -1,14 +1,14 @@
 # Usage
 
-Here's a quick crash course on getting things running. This repo has a wide range of scripts, so I'd recommend only installing what you need to start with.
+## Getting Started
 
-My personal dev environment uses Windows 10 with Git Bash. Your mileage may vary with different environments.
+### Installation
 
-## Python
+You'll need Python for these scripts - these scripts are developed with Python 3.9, but may work on older versions. If you're using pyenv, a .python-version file is included.
 
-The scripts in this repository are designed to work with Python 3.90. A .python-version file is included in the repo for use with pyenv.
+Don't forget to install pip requirements: `pip install -r requirements.txt`
 
-### Running Projects
+### Running
 
 All projects are designed to be run as modules from the root directory, eg:
 
@@ -16,31 +16,32 @@ All projects are designed to be run as modules from the root directory, eg:
 python -m theia.projects.palette_apply -h
 ```
 
-### Formatting
+### Continuous Integration
 
-Formatting is done with [Black](https://github.com/psf/black).
-
-### Tests
+All PRs and commits are automatically checked using Github Actions.
 
 Testing is done with the standard **unittest** library. To run tests from the root directory: `python -m unittest`
 
-## Additional Tools
+Formatting is done with [Black](https://github.com/psf/black). Style is checked as part of the CI process.
 
-Some of the scripts in this repository work with additional tools for texture conversion, 3D modelling, etc.
+## Blender
+
+Some of these scripts utilise Blender **2.91** to generate 3D models. In order for these scripts to function, you will need to have Blender installed and added to your PATH.
+
+## Source Engine
+
+Some of these scripts are designed to export content for use in the Source Engine - there's a bit more setup required for these.
 
 ### VTFCmd
 
-Some scripts use VTFCmd to convert textures into the .vtf file format required by Source Engine games. VTFCmd.exe should be installed into the root directory. You can install this by running `./scripts/install_vtfcmd.sh`
+To convert textures into the .vtf file format, VTFCmd.exe should be installed into the root directory.
+You can grab this automatically by running `./scripts/install_vtfcmd.sh`
 
-### Blender
+### Blender Plugins
 
-Some scripts interface with Blender to generate 3D models, or take advantage of Blender's procedural texturing. In order for these scripts to function, you will need to ensure that Blender is added to PATH.
-
-These scripts are built and tested on **Blender 2.91**. They may not work on older versions of Blender.
-
-Some scripts may use the following plugins:
+Scripts that export models for Source Engine use the following plugins:
 
 - [Blender Source Tools](https://github.com/Artfunkel/BlenderSourceTools)
 - [VHAC-D](https://github.com/tpdickso/blender_vhacd)
 
-At the time of writing, the "main" releases of these plugins are not designed for Blender 2.9+, so you will need to look around carefully to ensure compatibility. Sorry.
+if you're trying to get these working with 2.9 - good luck!
