@@ -18,7 +18,7 @@ def download_icons_from_page(url: str, path: str, max_images: int = 0):
 
     # Download all IDs we can find on this page
     n = 0
-    for x in re.finditer(r"data-id=\"(\d+)\"></a>", resp.text):
+    for x in re.finditer(r"data-id=\"(\d+)\">", resp.text):
         if max_images and n >= max_images:
             return
         download_image(x.group(1), path)
