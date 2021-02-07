@@ -270,7 +270,6 @@ def visualise(grid: Grid, size: int, padding: int):
         dot(xx + padding, yy + padding)
 
     img.save("output/grid_test.png")
-    pass
 
 
 if __name__ == "__main__":
