@@ -2,7 +2,7 @@ import argparse
 import math
 from typing import Callable
 from PIL import Image, ImageDraw
-from random import randrange, choice
+from random import randrange, choice, shuffle
 
 # Typings
 Point = tuple[int, int]
@@ -214,6 +214,53 @@ def triangle(grid: Grid, step: int = 1, symmetric: bool = True) -> Grid:
             return row
 
     return [[p for p in triangle_row(row, idx)] for idx, row in enumerate(grid)]
+
+
+def sparsify(grid: Grid, percentage: float) -> Grid:
+    """Drop a certain percentage of points randomly
+    This function keeps exactly the given percentage
+    for a faster, approximate method use fast_sparsify
+
+    Args:
+        grid (Grid): Grid to drop points from
+        percentage (float): Percentage of points to keep
+
+    Returns:
+        Grid: Transformed grid
+    """
+    # Determine which points to keep
+    row_size = len(grid[0])
+    point_indexes = [
+        col_index + (row_index * row_size)
+        for row_index, row in enumerate(grid)
+        for col_index, _ in enumerate(row)
+    ]
+    keep = round(len(point_indexes) * percentage)
+    shuffle(point_indexes)
+    points_to_keep = point_indexes[:keep]
+
+    return [
+        [
+            p
+            for col_index, p in enumerate(row)
+            if (col_index + (row_index * row_size)) in points_to_keep
+        ]
+        for row_index, row in enumerate(grid)
+    ]
+
+
+def fast_sparsify(grid: Grid, percentage: float) -> Grid:
+    """Drop an approximate percentage of points randomly
+    This function randomly evaluates each point - for an exact percentage, use sparsify
+
+    Args:
+        grid (Grid): Grid to drop points from
+        percentage (float): Percentage chance of keeping each point
+
+    Returns:
+        Grid: Transformed grid
+    """
+    return [[p for p in row if random.random() < percentage] for row in grid]
 
 
 def flatten(grid: Grid) -> list[Point]:

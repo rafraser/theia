@@ -93,6 +93,16 @@ def swap_quadrants(im: Image) -> Image:
 
 
 def wrapped_alpha_composite(im: Image, paste: Image, coord: tuple[int, int]) -> Image:
+    """Alpha composite (paste) an image onto a canvas, wrapping across the edges as required
+
+    Args:
+        im (Image): Canvas image to paste onto
+        paste (Image): Image to paste onto canvas
+        coord (tuple[int, int]): Top-left coordinate for pasting
+
+    Returns:
+        Image: Canvas image with wrapped pasted image
+    """
     corners = (coord[0], coord[1], coord[0] + paste.width, coord[1] + paste.height)
 
     # Note that alpha_composite is in-place so we can do some recursive trickery without combining results
