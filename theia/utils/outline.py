@@ -70,21 +70,16 @@ def drop_shadow(
     """
     # Base channels are what we want the shadow color to be
     r, g, b = Image.new("RGB", im.size, color).split()
-
-    # Blur our original image and extract alpha channel
-    # Multiply by the shadow strength
-    blurred = im.filter(ImageFilter.GaussianBlur(radius))
-    _, _, _, a = blurred.split()
+    _, _, _, a = im.split()
     a = a.point(lambda x: clamp(x * strength))
-
-    # Stick things back together to obtain our basic shadow
-    result = Image.merge("RGBA", (r, g, b, a))
+    shadow_base = Image.merge("RGBA", (r, g, b, a))
+    shadow_blurred = shadow_base.filter(ImageFilter.GaussianBlur(radius))
 
     # Arrange everything neatly on a canvas
     canvas = Image.new(
         "RGBA", [sum(x) for x in zip(im.size, offset)], (255, 255, 255, 0)
     )
-    canvas.paste(result, offset, result)
+    canvas.paste(shadow_blurred, offset, shadow_blurred)
     canvas = canvas.crop((0, 0, im.size[0], im.size[1]))
     canvas = Image.alpha_composite(canvas, im)
     return canvas
@@ -100,4 +95,4 @@ def drop_shadow_simple(im: Image, strength: int = 8) -> Image:
     Returns:
         Image: Output image, with composited drop shadow
     """
-    return drop_shadow(im, radius=strength, offset=(strength, strength))
+    return drop_shadow(im, radius=strength, offset=(strength + 2, strength + 4))
