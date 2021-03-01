@@ -1,0 +1,8 @@
+pink=#e84393
+purple=#673ab7
+cyan=#03a9f4
+green=#64dd17
+orange=#fa8231
+blue=#3867d6
+red=#d63031
+yellow=#ffc107
