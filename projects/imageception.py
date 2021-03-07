@@ -1,10 +1,10 @@
-from theia.utils.color import Color, average_color, color_image
-from theia.utils.palettes import (
+from theia.color import Color, average_color, color_image
+from theia.palettes import (
     ColorPalette,
     nearest_in_palette,
     convert_palette_to_named,
 )
-from theia.utils.image import load_from_path, load_images_from_path
+from theia.image import load_from_path, load_images_from_path
 
 from PIL import Image
 import argparse, math, os

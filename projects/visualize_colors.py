@@ -1,4 +1,4 @@
-from theia.utils.color import tidy_color
+from theia.color import tidy_color
 from sklearn.cluster import KMeans
 from collections import Counter
 from PIL import Image, ImageDraw

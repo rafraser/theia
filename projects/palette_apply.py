@@ -1,8 +1,8 @@
-from theia.utils.palettes import load_or_download_palette
-from theia.utils.channels import multiply
-from theia.utils.outline import neon_glow, apply_outline
-from theia.utils.color import Color
-from theia.utils.image import load_from_path
+from theia.palettes import load_or_download_palette
+from theia.channels import multiply
+from theia.outline import neon_glow, apply_outline
+from theia.color import Color
+from theia.image import load_from_path
 
 from PIL import Image
 import argparse, os

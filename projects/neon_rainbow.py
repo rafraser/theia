@@ -1,7 +1,7 @@
 import argparse
-from theia.utils.color import Color
-from theia.utils.gif import combine_frames
-from theia.utils.outline import neon_glow
+from theia.color import Color
+from theia.gif import combine_frames
+from theia.outline import neon_glow
 from PIL import Image, ImageColor
 
 

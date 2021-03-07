@@ -1,8 +1,8 @@
 import argparse, os, math
-from theia.utils.channels import invert_with_alpha
-from theia.utils.flaticon import main as download_flaticons
-from theia.projects.bulk_tidy import main as tidy_icons
-from theia.projects.palette_apply import main as apply_palette
+from theia.channels import invert_with_alpha
+from theia.flaticon import main as download_flaticons
+from bulk_tidy import main as tidy_icons
+from palette_apply import main as apply_palette
 from PIL import Image
 
 

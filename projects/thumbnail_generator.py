@@ -1,6 +1,6 @@
-from theia.utils.palettes import load_or_download_palette
-from theia.utils.image import load_from_path
-from theia.utils.outline import drop_shadow_simple
+from theia.palettes import load_or_download_palette
+from theia.image import load_from_path
+from theia.outline import drop_shadow_simple
 
 from PIL import Image
 import argparse, math, os

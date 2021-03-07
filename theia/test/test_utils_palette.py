@@ -1,5 +1,5 @@
 import unittest
-from theia.utils.palettes import parse_palette
+from theia.palettes import parse_palette
 
 palette_test_basic = """
 #e74c3c

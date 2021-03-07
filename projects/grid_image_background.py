@@ -1,7 +1,7 @@
-from theia.utils.image import load_images_from_path
-from theia.utils.channels import multiply
-from theia.utils.image import wrapped_alpha_composite, swap_quadrants
-import theia.utils.grid as grid
+from theia.image import load_images_from_path
+from theia.channels import multiply
+from theia.image import wrapped_alpha_composite, swap_quadrants
+import theia.grid as grid
 
 from PIL import Image, ImageColor
 import argparse

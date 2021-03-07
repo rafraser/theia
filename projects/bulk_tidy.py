@@ -1,6 +1,6 @@
 import argparse, os, math
-from theia.utils.channels import invert_with_alpha
-from theia.utils.image import load_from_path
+from theia.channels import invert_with_alpha
+from theia.image import load_from_path
 from PIL import Image
 
 
