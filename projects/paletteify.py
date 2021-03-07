@@ -1,10 +1,10 @@
-from theia.utils.color import Color
-from theia.utils.palettes import (
+from theia.color import Color
+from theia.palettes import (
     ColorPalette,
     nearest_in_palette,
     load_or_download_palette,
 )
-from theia.utils.image import load_from_path
+from theia.image import load_from_path
 
 from PIL import Image
 import argparse, math, os

@@ -1,4 +1,4 @@
-from theia.utils.color import Color, tidy_color, color_to_hex, distance_squared
+from theia.color import Color, tidy_color, color_to_hex, distance_squared
 from PIL import Image, ImageColor
 import os, requests
 

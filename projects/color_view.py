@@ -1,4 +1,4 @@
-from theia.utils.palettes import load_or_download_palette
+from theia.palettes import load_or_download_palette
 from PIL import Image, ImageDraw
 import argparse
 

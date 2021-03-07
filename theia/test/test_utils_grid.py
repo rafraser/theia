@@ -1,5 +1,5 @@
 import unittest
-import theia.utils.grid as grid
+import theia.grid as grid
 
 grid_test_base = [
     [(0, 0), (10, 0), (20, 0), (30, 0), (40, 0), (50, 0)],

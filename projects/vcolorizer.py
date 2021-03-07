@@ -1,6 +1,6 @@
-from theia.utils.palettes import load_or_download_palette
-from theia.utils.channels import multiply, set_alpha_channel
-from theia.utils.color import Color
+from theia.palettes import load_or_download_palette
+from theia.channels import multiply, set_alpha_channel
+from theia.color import Color
 from theia.sourcetools.vmt_templater import convert_folder_to_vtf, generate_vmt
 
 from PIL import Image

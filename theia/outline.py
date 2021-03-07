@@ -1,6 +1,6 @@
 from PIL import Image, ImageFilter, ImageOps, ImageChops
-from theia.utils.channels import invert_with_alpha, multiply_no_alpha
-from theia.utils.color import clamp, Color
+from theia.channels import invert_with_alpha, multiply_no_alpha
+from theia.color import clamp, Color
 
 
 def apply_outline(
