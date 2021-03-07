@@ -2,6 +2,11 @@
 .vscode
 __pycache__
 
+# Ignore PyPi build stuff
+build/
+dist/
+*.egg-info/
+
 # Ignore my workbench scripts
 theia/workbench.py
 theia/workbench.ipynb
