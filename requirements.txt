@@ -1,4 +1,4 @@
 Pillow==8.2.0
 requests==2.25.1
-black==21.4b0
+black==21.4b1
 mkdocs==1.1.2
