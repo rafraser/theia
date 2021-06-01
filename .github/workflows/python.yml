@@ -8,7 +8,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,9 +23,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Lint with Black
+      - name: Lint with Flake8
         run: |
-          black --check .
+          flake8 theia --max-line-length=120
 
       - name: Run tests
         run: |

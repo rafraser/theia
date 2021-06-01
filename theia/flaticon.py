@@ -1,4 +1,7 @@
-import argparse, os, requests, re
+import argparse
+import os
+import re
+import requests
 
 
 def download_icons_from_page(url: str, path: str, max_images: int = 0):
@@ -7,7 +10,7 @@ def download_icons_from_page(url: str, path: str, max_images: int = 0):
     Args:
         url (str): URL to fetch icons from
         path (str): Output directory
-        max_images (int, optional): Maximum number of images to download. If not specified, will continue until fully downloaded.
+        max_images (int, optional): Maximum number of images to download. Leave blank for all.
 
     Raises:
         Exception: If the URL could not be loaded
