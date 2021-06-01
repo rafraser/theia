@@ -23,9 +23,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Lint with Black
+      - name: Lint with Flake8
         run: |
-          black --check .
+          flake8 --check theia --max-line-length=120
 
       - name: Run tests
         run: |
