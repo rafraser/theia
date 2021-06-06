@@ -2,7 +2,7 @@ import argparse
 import math
 from typing import Callable
 from PIL import Image, ImageDraw
-from random import randrange, choice, shuffle
+from random import randrange, random, choice, shuffle
 
 # Typings
 Point = tuple[int, int]
@@ -22,14 +22,10 @@ def build(size: int, num: int) -> Grid:
     """
     step = size / (num - 1)
 
-    return [
-        [(round(step * xn), round(step * yn)) for xn in range(num)] for yn in range(num)
-    ]
+    return [[(round(step * xn), round(step * yn)) for xn in range(num)] for yn in range(num)]
 
 
-def build_radial(
-    size: int, num_angular: int, num_radius: int, offset: int = 0, center: bool = True
-) -> Grid:
+def build_radial(size: int, num_angular: int, num_radius: int, offset: int = 0, center: bool = True) -> Grid:
     """Build a radial grid
 
     Args:
@@ -53,10 +49,7 @@ def build_radial(
         return (xx + round(rad * math.cos(ang)), yy + round(rad * math.sin(ang)))
 
     grid = [
-        [
-            rad_to_cart(ang_off + (ang_step * an), rad_step * (rn + 1))
-            for an in range(num_angular)
-        ]
+        [rad_to_cart(ang_off + (ang_step * an), rad_step * (rn + 1)) for an in range(num_angular)]
         for rn in range(num_radius)
     ]
 
@@ -93,7 +86,7 @@ def jitter(
     """
     # If no size is specified, grab the largest point we have
     # if jittering a grid twice this could go badly...
-    if size == None:
+    if size is None:
         size = max(grid[0], key=lambda x: x[0])[0]
 
     # Argument handling - there's a few cases
@@ -134,9 +127,7 @@ def jitter(
     return [[(clampf(jit(xx)), clampf(jit(yy))) for (xx, yy) in row] for row in grid]
 
 
-def shift_rows(
-    grid: Grid, offset: int, mod: int = 2, size: int = None, clamp: bool = False
-) -> Grid:
+def shift_rows(grid: Grid, offset: int, mod: int = 2, size: int = None, clamp: bool = False) -> Grid:
     """Shift Nth rows of a grid by a fixed amount
 
     Args:
@@ -152,21 +143,13 @@ def shift_rows(
     result_grid = []
     for row_index, row in enumerate(grid):
         if row_index % mod == 0:
-            result_grid.append(
-                [
-                    (x_off, yy)
-                    for (xx, yy) in row
-                    if (x_off := xx + offset) >= 0 and x_off <= size
-                ]
-            )
+            result_grid.append([(x_off, yy) for (xx, yy) in row if (x_off := xx + offset) >= 0 and x_off <= size])
         else:
             result_grid.append(row)
     return result_grid
 
 
-def shift_columns(
-    grid: Grid, offset: int, mod: int = 2, size: int = None, clamp: bool = False
-) -> Grid:
+def shift_columns(grid: Grid, offset: int, mod: int = 2, size: int = None, clamp: bool = False) -> Grid:
     """Shift Nth columns of a grid by a fixed amount
 
     Args:
@@ -231,20 +214,14 @@ def sparsify(grid: Grid, percentage: float) -> Grid:
     # Determine which points to keep
     row_size = len(grid[0])
     point_indexes = [
-        col_index + (row_index * row_size)
-        for row_index, row in enumerate(grid)
-        for col_index, _ in enumerate(row)
+        col_index + (row_index * row_size) for row_index, row in enumerate(grid) for col_index, _ in enumerate(row)
     ]
     keep = round(len(point_indexes) * percentage)
     shuffle(point_indexes)
     points_to_keep = point_indexes[:keep]
 
     return [
-        [
-            p
-            for col_index, p in enumerate(row)
-            if (col_index + (row_index * row_size)) in points_to_keep
-        ]
+        [p for col_index, p in enumerate(row) if (col_index + (row_index * row_size)) in points_to_keep]
         for row_index, row in enumerate(grid)
     ]
 
@@ -260,7 +237,7 @@ def fast_sparsify(grid: Grid, percentage: float) -> Grid:
     Returns:
         Grid: Transformed grid
     """
-    return [[p for p in row if random.random() < percentage] for row in grid]
+    return [[p for p in row if random() < percentage] for row in grid]
 
 
 def flatten(grid: Grid) -> list[Point]:

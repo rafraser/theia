@@ -1,11 +1,8 @@
-from PIL import Image, ImageFilter, ImageOps, ImageChops
-from theia.channels import invert_with_alpha, multiply_no_alpha
+from PIL import Image, ImageFilter
 from theia.color import clamp, Color
 
 
-def apply_outline(
-    im: Image, color: Color, width: int = 8, softness: int = 127
-) -> Image:
+def apply_outline(im: Image, color: Color, width: int = 8, softness: int = 127) -> Image:
     """Apply an outline to an image
 
     Args:
@@ -76,9 +73,7 @@ def drop_shadow(
     shadow_blurred = shadow_base.filter(ImageFilter.GaussianBlur(radius))
 
     # Arrange everything neatly on a canvas
-    canvas = Image.new(
-        "RGBA", [sum(x) for x in zip(im.size, offset)], (255, 255, 255, 0)
-    )
+    canvas = Image.new("RGBA", [sum(x) for x in zip(im.size, offset)], (255, 255, 255, 0))
     canvas.paste(shadow_blurred, offset, shadow_blurred)
     canvas = canvas.crop((0, 0, im.size[0], im.size[1]))
     canvas = Image.alpha_composite(canvas, im)

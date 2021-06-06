@@ -216,9 +216,7 @@ def download_lospec_palette(name: str) -> ColorPalette:
     return parse_palette_lines(["#" + c for c in r.text.splitlines()])
 
 
-def nearest_in_palette(
-    target: Color, palette: ColorPalette, cache: dict[Color, Color] = None
-) -> Color:
+def nearest_in_palette(target: Color, palette: ColorPalette, cache: dict[Color, Color] = None) -> Color:
     """Find a color in a palette closest to a given color
 
     Args:

@@ -1,3 +1,4 @@
+# flake8: noqa
 import theia.channels as channels
 import theia.color as color
 import theia.flaticon as flaticon
