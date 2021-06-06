@@ -42,6 +42,8 @@ def parse_palette(content: str,
         load_palette_file(content, palette_dir=palette_dir)
     except FileNotFoundError:
         pass
+    except OSError:
+        pass
 
     # If this looks like a URL, try downloading the palette
     if allow_download and (content.startswith("http:") or content.startswith("https:")):
@@ -58,6 +60,8 @@ def parse_palette(content: str,
     # If we don't: probably a Lospec palette identifier
     if "," in content:
         return parse_palette_lines(content.split(","))
+    elif ";" in content:
+        return parse_palette_lines(content.split(";"))
     else:
         lospec_url = f"https://lospec.com/palette-list/{content}"
         return download_palette_from_url(lospec_url, save=save_downloaded, palette_dir=palette_dir)
@@ -87,31 +91,19 @@ def parse_palette_lines(strings: list[str]) -> ColorPalette:
         # Attempt to determine color names seperated by = or :
         line_data = s
         if "=" in s:
-            line_data = [clean_symbols(x) for x in s.split("=")]
+            line_data = [x.strip(" ;") for x in s.split("=")]
         elif ":" in s:
-            line_data = [clean_symbols(x) for x in s.split(":")]
+            line_data = [x.strip(" ;") for x in s.split(":")]
 
         if isinstance(line_data, list):
             color_name = tidy_color_name(line_data[0])
             color_value = ImageColor.getrgb(line_data[1])
             result[color_name] = color_value
         else:
-            result[str(unnamed)] = ImageColor.getrgb(clean_symbols(line_data))
+            result[str(unnamed)] = ImageColor.getrgb(line_data)
             unnamed += 1
 
     return result
-
-
-def clean_symbols(word: str) -> str:
-    """Remove all non alphanumeric characters from a string
-
-    Args:
-        word (str): String to cleanse
-
-    Returns:
-        str: Cleansed string
-    """
-    return "".join([c for c in word if c.isalnum() or c == "#"])
 
 
 def tidy_color_name(word: str) -> str:
@@ -124,7 +116,7 @@ def tidy_color_name(word: str) -> str:
     Returns:
         str: Tidied color name
     """
-    return word.replace(" ", "_").lower()
+    return "".join([c for c in word if c.isalnum()]).lower()
 
 
 def load_palette_file(name: str, palette_dir: str = "palettes") -> ColorPalette:
