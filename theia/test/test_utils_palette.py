@@ -36,3 +36,7 @@ class TestPalettes(unittest.TestCase):
     def test_csv_palette_named_two(self):
         text = "red: #e74c3c; blue: #3498db"
         self.assertEqual(self.parse(text), goal_named)
+
+    def test_csv_palette_named_three(self):
+        text = "red: #e74c3c; blue: #3498db;"
+        self.assertEqual(self.parse(text), goal_named)
