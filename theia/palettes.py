@@ -1,6 +1,8 @@
 from theia.color import Color, color_to_hex, distance_squared
 from PIL import ImageColor
+import json
 import os
+import re
 import requests
 
 # Extension to use for palette files
@@ -10,48 +12,67 @@ PALETTE_EXT = "txt"
 ColorPalette = dict[str, Color]
 
 
-def load_palette(name: str) -> ColorPalette:
-    """Parse a palette file into a list of colors
-    This loads from the palettes/ directory
+def parse_palette(content: str,
+                  allow_download: bool = True,
+                  save_downloaded: bool = True,
+                  palette_dir: str = "palettes") -> ColorPalette:
+    """Attempt to parse a palette from a given string
 
-    For info on what color strings can be handled:
-    https://pillow.readthedocs.io/en/stable/reference/ImageColor.html
+    This works in the following order:
+        - Load locally saved palettes from the given directory
+        - Attempt to download from a URL, if applicable
+        - Attempt to parse as a JSON object
+        - Attempt to read as a CSV palette
+        - Attempt to download from the Lospec palette API
 
-    Args:
-        name (str): Palette name. Should be a file in the palettes/ directory.
-
-    Returns:
-        list[Color]: List of RGB colors
-    """
-    with open(f"palettes/{name}.{PALETTE_EXT}") as f:
-        return parse_palette([line for line in f.readlines()])
-
-
-def load_or_download_palette(name: str, save: bool = True) -> ColorPalette:
-    """Attempts to load a palette from the given palette file
-    If the palette does not exist, this will attempt to download the palette from lospec
+    If you know in advance what format this palette string will be in,
+    see the rest of this module for specific handler functions
 
     Args:
-        name (str): Palette name.
-        save (bool, optional): If the palette is downloaded, should a copy be saved? Defaults to True.
+        content (str): Palette string to attempt to parse
+        allow_download (bool, optional): Whether to attempt to download palettes if a URL is given. Defaults to True.
+        save_downloaded (bool, optional): Whether to save any palettes that are downloaded. Defaults to True.
+        palette_dir (str, optional): Palette directory to save/load local palettes. Defaults to "palettes".
 
     Returns:
-        list[Color]: List of RGB colors
+        ColorPalette: [description]
     """
+    # Prioritise local palettes above all else
     try:
-        return load_palette(name)
+        load_palette_file(content, palette_dir=palette_dir)
     except FileNotFoundError:
-        if save:
-            return download_and_save_lospec_palette(name)
-        else:
-            return download_lospec_palette(name)
+        pass
+    except OSError:
+        pass
+
+    # If this looks like a URL, try downloading the palette
+    if allow_download and (content.startswith("http:") or content.startswith("https:")):
+        return download_palette_from_url(content, save=save_downloaded, palette_dir=palette_dir)
+
+    # Attempt to parse as a JSON palette
+    try:
+        return parse_palette_from_json(content)
+    except json.JSONDecodeError:
+        pass
+
+    # We've exhausted the main options! What we do next depends on commas
+    # If we have commas: this is probably a csv palette format
+    # If we don't: probably a Lospec palette identifier
+    if "," in content:
+        return parse_palette_lines(content.split(","))
+    elif ";" in content:
+        return parse_palette_lines(content.split(";"))
+    else:
+        lospec_url = f"https://lospec.com/palette-list/{content}"
+        return download_palette_from_url(lospec_url, save=save_downloaded, palette_dir=palette_dir)
 
 
-def parse_palette(strings: list[str]) -> ColorPalette:
-    """Parse a list of strings into a list of colors
+def parse_palette_lines(strings: list[str]) -> ColorPalette:
+    """Parse a list of strings into a ColorPalette
 
     Args:
-        strings (list[str]): List of possible color strings
+        strings (list[str]): List of possible color strings.
+                             These can include names or be standalone colors.
 
     Returns:
         ColorPalette: Palette dictionary mapping names to colors
@@ -70,88 +91,113 @@ def parse_palette(strings: list[str]) -> ColorPalette:
         # Attempt to determine color names seperated by = or :
         line_data = s
         if "=" in s:
-            line_data = [clean_symbols(x) for x in s.split("=")]
+            line_data = [x.strip(" ;") for x in s.split("=")]
         elif ":" in s:
-            line_data = [clean_symbols(x) for x in s.split(":")]
+            line_data = [x.strip(" ;") for x in s.split(":")]
 
         if isinstance(line_data, list):
-            result[line_data[0]] = ImageColor.getrgb(line_data[1])
+            color_name = tidy_color_name(line_data[0])
+            color_value = ImageColor.getrgb(line_data[1])
+            result[color_name] = color_value
         else:
-            result[str(unnamed)] = ImageColor.getrgb(clean_symbols(line_data))
+            result[str(unnamed)] = ImageColor.getrgb(line_data)
             unnamed += 1
 
     return result
 
 
-def clean_symbols(word: str) -> str:
-    """Remove all non alphanumeric characters from a string
+def tidy_color_name(word: str) -> str:
+    """Tidy up a string to make it suitable for a color name in a palette
+    This replaces whitespace with underscores, and lowers the text
 
     Args:
-        word (str): String to cleanse
+        word (str): Color name to tidy up
 
     Returns:
-        str: Cleansed string
+        str: Tidied color name
     """
-    return "".join([c for c in word if c.isalnum() or c == "#"])
+    return "".join([c for c in word if c.isalnum()]).lower()
 
 
-def parse_unnamed_palette(strings: list[str]) -> list[Color]:
-    """Parse a list of strings into a list of colors
+def load_palette_file(name: str, palette_dir: str = "palettes") -> ColorPalette:
+    """Parse a palette file into a list of colors
+    This loads from the palettes/ directory
+
+    For info on what color strings can be handled:
+    https://pillow.readthedocs.io/en/stable/reference/ImageColor.html
 
     Args:
-        strings (list[str]): List of possible color strings
+        name (str): Palette name. Should be a file in the palettes/ directory.
 
     Returns:
-        list[Color]: List of parsed RGB colors
+        list[Color]: List of RGB colors
     """
-    return [ImageColor.getrgb(s) for s in strings]
+    palette_file = os.path.join(palette_dir, f"{name}.{PALETTE_EXT}")
+    with open(palette_file) as f:
+        return parse_palette_lines([line for line in f.readlines()])
 
 
-def convert_palette_to_named(colors: list[Color], names: list[str] = None) -> ColorPalette:
-    """Convert a list of colors into a named color palette
+def save_palette(name: str, colors: ColorPalette, palette_dir: str = "palettes"):
+    """Save a given palette into a text file
+    This will save into the palettes/ directory
 
     Args:
-        colors (list[Color]): List of colors
+        name (str): Palette name
+        colors (list[Color]): List of RGB colors to save
+        palette_dir (str): Directory to save the file to. Defaults to "palettes"
+    """
+    os.makedirs(palette_dir, exist_ok=True)
+    palette_path = os.path.join(f"{name}.{PALETTE_EXT}")
+    with open(palette_path, "w") as f:
+        f.writelines(
+            [name + "=" + color_to_hex(c) + "\n" for name, c in colors.items()]
+        )
+
+
+def parse_palette_from_json(content: str) -> ColorPalette:
+    """Parse a color palette from a JSON string
+    The keys will be used as the color names, and the values converted to color values
+
+    Complicated JSON objects will throw an error - ensure that the JSON given is only one level deep
+
+    Args:
+        content (str):
 
     Returns:
-        ColorPalette: Named color palette
+        ColorPalette: Parsed color palette
     """
-    if not names:
-        return {str(n): c for n, c in enumerate(colors)}
+    palette = json.loads(content)
+    return {tidy_color_name(k): ImageColor.getrgb(v) for k, v in palette.items()}
+
+
+def download_palette_from_url(url: str, save: bool = True, palette_dir: str = "palettes") -> ColorPalette:
+    """Attempt to load a color palette from the given URL
+
+    Supported palette hosts:
+        Lospec
+
+    Args:
+        url (str): URL to palette
+        save (bool, optional): Whether this palette should be saved once downloaded. Defaults to True.
+        palette_dir (str, optional): Where to save downloaded palettes to. Defaults to "palettes".
+
+    Returns
+        ColorPalette: ColorPalette obtained from the given URL
+    """
+    # Lospec palettes
+    if m := re.match(r"https:\/\/lospec\.com\/palette-list\/(\S+)"):
+        name = m.group(1)
+        palette = download_lospec_palette(name)
+
+    if palette:
+        if save:
+            save_palette(name, palette, palette_dir)
+        return palette
     else:
-        if len(names) != len(colors):
-            raise ValueError("Number of names must match number of colors")
-        else:
-            return {names[n]: c for n, c in enumerate(colors)}
+        raise ValueError("URL is not recognised as a support palette host")
 
 
-def save_palette(name: str, colors: ColorPalette):
-    """Save a given palette into a text file
-    This will save into the palettes/ directory
-
-    Args:
-        name (str): Palette name
-        colors (list[Color]): List of RGB colors to save
-    """
-    os.makedirs("palettes", exist_ok=True)
-    with open(f"palettes/{name}.{PALETTE_EXT}", "w") as f:
-        f.writelines([name + "=" + color_to_hex(c) + "\n" for name, c in colors.items()])
-
-
-def save_unnamed_palette(name: str, colors: list[Color]):
-    """Save a given palette into a text file
-    This will save into the palettes/ directory
-
-    Args:
-        name (str): Palette name
-        colors (list[Color]): List of RGB colors to save
-    """
-    os.makedirs("palettes", exist_ok=True)
-    with open(f"palettes/{name}.{PALETTE_EXT}", "w") as f:
-        f.writelines([color_to_hex(c) + "\n" for c in colors])
-
-
-def download_lospec_palette(name: str) -> list[Color]:
+def download_lospec_palette(name: str) -> ColorPalette:
     """Download a palette name from lospec
     This does not save the palette - see the below function to save palettes
 
@@ -164,26 +210,10 @@ def download_lospec_palette(name: str) -> list[Color]:
     Returns:
         ColorPalette: Parsed colors from the palette
     """
-    r = requests.get(f"https://lospec.com/palette-list/{name}.hex")
+    r = requests.get(f"https://lospec.com/palette-list/{name}.hex", timeout=5)
     if r.status_code != 200:
-        raise ValueError("Could not get palette info from lospec!")
-
-    return parse_unnamed_palette(["#" + c for c in r.text.splitlines()])
-
-
-def download_and_save_lospec_palette(name: str) -> ColorPalette:
-    """Download a palette from lospec and save it to a file
-    This also returns the saved palette, for your convienence
-
-    Args:
-        name (str): Palette name to fetch
-
-    Returns:
-        ColorPalette: Parsed colors from the palette
-    """
-    colors = download_lospec_palette(name)
-    save_unnamed_palette(name, colors)
-    return convert_palette_to_named(colors)
+        raise RuntimeError("Could not get palette info from lospec!")
+    return parse_palette_lines(["#" + c for c in r.text.splitlines()])
 
 
 def nearest_in_palette(target: Color, palette: ColorPalette, cache: dict[Color, Color] = None) -> Color:

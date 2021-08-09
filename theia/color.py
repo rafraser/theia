@@ -1,5 +1,5 @@
-from typing import Callable
-from math import floor
+from typing import Callable, Union
+from math import cos, floor, pi
 from random import random
 from PIL import Image, ImageColor, ImageDraw
 
@@ -78,6 +78,40 @@ def interpolate(
         Color: Interpolated color value
     """
     return linear_interpolate(color1, color2, f(p))
+
+
+def interpolate_cosine(a: Color, b: Color, c: Color, d: Color, t: Union[float, list[float]]
+                       ) -> Union[Color, list[Color]]:
+    """Given four input parameters, generate a cosine-interpolated value
+
+    See:
+    https://iquilezles.org/www/articles/palettes/palettes.htm
+
+    Args:
+        a (Color): Color for parameter A
+        b (Color): Color for parameter B
+        c (Color): Color for parameter C
+        d (Color): Color for parameter D
+        t (float | list[float]): T value(s) to evaluate the cosine gradient at
+
+    Returns:
+        Color | list[Color]: [description]
+    """
+    a = tuple(v / 255 for v in a)
+    b = tuple(v / 255 for v in b)
+    c = tuple(v / 255 for v in c)
+    d = tuple(v / 255 for v in d)
+
+    def cosine_step(t: float):
+        rr = a[0] + b[0] * cos(2 * pi * (c[0] * t + d[0]))
+        gg = a[0] + b[0] * cos(2 * pi * (c[0] * t + d[0]))
+        bb = a[0] + b[0] * cos(2 * pi * (c[0] * t + d[0]))
+        return tidy_color(rr * 255, gg * 255, bb * 255)
+
+    if isinstance(t, list):
+        return [cosine_step(t_value) for t_value in t]
+    else:
+        return cosine_step(t)
 
 
 def gradient(stops: Gradient, t: float) -> Color:
