@@ -1,5 +1,14 @@
-site_name: Theia Documentation
+site_name: Theia Handbook
 nav:
   - Home: index.md
+  - Channels: channels.md
+  - Color: color.md
+  - Grid: grid.md
+  - Image: image.md
+  - Outline: outline.md
+  - Palettes: palettes.md
 theme:
   name: readthedocs
+  highlightjs: true
+  hljs_languages:
+    - python
